@@ -1,9 +1,14 @@
 
 // game deps
 import ui/[Sprite, MainUI]
-import Engine, Level
+import Engine, Level, Hero
 
 import math/[Vec2, Vec3, Random]
+
+BaddieState: enum {
+    CMON,
+    GTFO
+}
 
 Baddie: class extends Actor {
 
@@ -11,6 +16,8 @@ Baddie: class extends Actor {
 
     touchesGround := false
     groundHeight := 0.0
+
+    hero: Hero
 
     mainSprite: EllipseSprite
     bb: RectSprite // bounding box
@@ -21,7 +28,7 @@ Baddie: class extends Actor {
 
     counter := 0
 
-    speed := 4.0
+    speed := 8.0
     speedAlpha := 0.5
 
     collideCounter := 0
@@ -29,10 +36,13 @@ Baddie: class extends Actor {
 
     scale := 0.25
 
-    init: func (=level, =groundHeight) {
+    state := BaddieState CMON
+
+    init: func (=level, =groundHeight, =hero) {
         ui = level engine ui
 
         body = Body new(level)
+        body gravity = 0.0
 
         bb = RectSprite new(body pos)
         bb filled = false
@@ -49,54 +59,23 @@ Baddie: class extends Actor {
     }
 
     update: func (delta: Float) {
-        counter = counter - 1
-        if (counter < 0) {
-            counter = Random randInt(40, 600)
-            direction = -direction
-        } else if (collides?()) {
-            direction = -direction
+        diff := hero body pos sub(body pos)
+
+        match (state) {
+            case BaddieState CMON =>
+                // nuffin to do
+            case BaddieState GTFO =>
+                diff = diff mul(-1.0)
         }
 
-        body speed interpolateX(speed * direction, speedAlpha)
+        if (hero body speed norm() < 3.0 && diff norm() < 200.0) {
+            state = BaddieState GTFO
+        } else {
+            state = BaddieState CMON
+        }
 
+        body speed interpolate(diff normalized() mul(speed), 0.05)
         body update(delta)
-
-        // artificial ground collision
-        maxHeight := groundHeight - bb size y / 2
-        if (body pos y > maxHeight) {
-            if (body speed y > 0) {
-                body speed y = 0
-            }
-            body pos y = maxHeight
-            touchesGround = true
-        } else {
-            touchesGround = false
-        }
-    }
-
-    collides?: func -> Bool {
-        if (collideCounter > 0) {
-            collideCounter = collideCounter - 1
-            return false
-        }
-
-        collides := false
-
-        if (body pos x - bb size x / 2 < 0) {
-            collides = true
-        } else if (body pos x + bb size x / 2 > ui width) {
-            collides = true
-        } else {
-            level collides?(box, |bang|
-                // TODO: do more interesting stuff with the info here
-                collides = true 
-            )
-        }
-
-        if (collides) {
-            collideCounter = Random randInt(0, collideDuration)
-        }
-        collides
     }
 
 }

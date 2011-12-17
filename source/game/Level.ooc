@@ -42,7 +42,7 @@ Level: class {
         actors add(hero)
 
         10 times(||
-            baddie := Baddie new(this, ground y)
+            baddie := Baddie new(this, ground y, hero)
             baddie body pos x = Random randInt(0, engine ui width)
             actors add(baddie)
         )

@@ -22,6 +22,18 @@ Vec2: class {
         x * x + y * y
     }
 
+    normalized: func -> This {
+        mul(1.0 / norm())
+    }
+
+    mul: func (f: Float) -> This {
+        new(x * f, y * f)
+    }
+
+    sub: func (v: Vec2) -> This {
+        new(x - v x, y - v y)
+    }
+
     interpolate: func (target: This, alpha: Float) {
         (x, y) = (x * (1 - alpha) + target x * alpha,
                   y * (1 - alpha) + target y * alpha)
