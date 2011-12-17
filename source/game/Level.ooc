@@ -64,12 +64,12 @@ Hero: class extends Actor {
     speed := 1.0
 
     init: func (=level) {
-        svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/movingObj_Full.svg", "Layer_1")
+        svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/movingObj_Full.svg")
         level engine ui sprites add(svgSprite)
     }
 
     update: func (delta: Float) {
-        logger debug("Updating hero with delta %.2f" format(delta))
+        // logger debug("Updating hero with delta %.2f" format(delta))
         svgSprite pos x += delta * speed
     }
 

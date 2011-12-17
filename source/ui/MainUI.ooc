@@ -29,10 +29,8 @@ MainUI: class {
         win connect("delete-event", exit) // exit on window close
 
         // redraw on each window move, possibly before!
-        win connect("expose-event", || this draw())
-
-        // capture key events!
-        win connectNaked("key-press-event", this, keyPressed)
+        win connect("expose-event", || draw())
+        win connectKeyEvent("key-press-event", |ev| keyPressed(ev))
 
         win showAll()
     }
@@ -42,7 +40,7 @@ MainUI: class {
     }
 
     keyPressed: func (ev: EventKey*) {
-        "Key pressed! event = %p" printfln(ev)
+        "Key pressed! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
     }
 
     redraw: func {
