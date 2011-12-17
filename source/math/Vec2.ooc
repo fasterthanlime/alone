@@ -27,6 +27,13 @@ Vec2: class {
                   y * (1 - alpha) + target y * alpha)
     }
 
+    interpolateX: func (target: Float, alpha: Float) {
+        x = x * (1 - alpha) + target * alpha
+    }
+
+    interpolateY: func (target: Float, alpha: Float) {
+        y = y * (1 - alpha) + target * alpha
+    }
     toString: func -> String {
         "(%.2f, %.2f)" format(x, y)
     }

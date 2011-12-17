@@ -13,6 +13,7 @@ import zombieconfig
 Keys: enum from UInt {
     LEFT  = 65361
     RIGHT = 65363
+    SPACE = 32
 }
 
 MainUI: class {
@@ -20,7 +21,10 @@ MainUI: class {
 
     width, height: Int
 
+    // different passes
+    bgSprites := ArrayList<Sprite> new()
     sprites := ArrayList<Sprite> new()
+    debugSprites := ArrayList<Sprite> new()
 
     MAX_KEY := static 65536
     keyState: Bool*
@@ -83,9 +87,17 @@ MainUI: class {
 
     paint: func (cr: Context) {
         background(cr)
+
+        bgSprites each(|sprite|
+            sprite draw(cr)
+        )
         sprites each(|sprite|
             sprite draw(cr)
         )
+        debugSprites each(|sprite|
+            sprite draw(cr)
+        )
+
     }
 
     background: func (cr: Context) {

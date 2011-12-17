@@ -12,6 +12,7 @@ Sprite: class {
 
     logger := static Log getLogger(This name)
     pos: Vec2
+    offset := vec2(0.0, 0.0)
     scale := vec2(1.0, 1.0)
     color := vec3(1.0, 0.0, 0.0)
 
@@ -32,7 +33,7 @@ Sprite: class {
      */
     draw: func (cr: Context) {
         cr save()
-        cr translate(pos x, pos y)
+        cr translate(pos x + offset x, pos y + offset y)
         cr scale(scale x, scale y)
 
         paint(cr)
@@ -71,6 +72,7 @@ RectSprite: class extends Sprite {
     init: super func
 
     size := vec2(1.0, 1.0)
+    filled := true
 
     paint: func (cr: Context) {
         halfWidth  := size x * 0.5
@@ -82,7 +84,11 @@ RectSprite: class extends Sprite {
         cr lineTo( halfWidth,  halfHeight)
         cr lineTo(-halfWidth,  halfHeight)
         cr closePath()
-        cr fill()
+        if (filled) {
+            cr fill()
+        } else {
+            cr stroke()
+        }
     }
 
 }
