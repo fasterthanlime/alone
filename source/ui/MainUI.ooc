@@ -89,18 +89,8 @@ MainUI: class {
     }
 
     background: func (cr: Context) {
-        cr setSourceRGB(0, 0, 0)
+        cr setSourceRGB(0.1, 0.1, 0.1)
         cr paint()
-    }
-
-    triangle: func (cr: Context) {
-        cr setLineWidth(15)
-        cr setSourceRGB(255, 0, 0)
-        cr moveTo(0, 0)
-        cr lineTo(width / 2, height)
-        cr relLineTo(width / 2, -height)
-        cr closePath()
-        cr stroke()
     }
 
 }

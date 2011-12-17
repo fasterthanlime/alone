@@ -1,7 +1,7 @@
 use deadlogger, cairo, rsvg
 
 // game deps
-import math/Vec2
+import math/[Vec2, Vec3]
 
 // libs deps
 import deadlogger/Log
@@ -13,6 +13,7 @@ Sprite: class {
     logger := static Log getLogger(This name)
     pos: Vec2
     scale := vec2(1.0, 1.0)
+    color := vec3(1.0, 0.0, 0.0)
 
     init: func (=pos) {
         logger debug("Created %s at %s" format(class name, pos _))
@@ -45,8 +46,8 @@ Sprite: class {
      */
     paint: func (cr: Context) {
         cr setLineWidth(3)
-        cr setSourceRGB(255, 0, 0)
 
+        cr setSourceRGB(color x, color y, color z)
         cr moveTo(0, 0)
         cr lineTo(0, 50)
         cr relLineTo(50, 0)
@@ -58,6 +59,30 @@ Sprite: class {
     free: func {
         // in theory, release resources
         // in practice, nothing to do in the base class
+    }
+
+}
+
+/**
+ * A rectangle, initially a 1x1 square
+ */
+RectSprite: class extends Sprite {
+
+    init: super func
+
+    size := vec2(1.0, 1.0)
+
+    paint: func (cr: Context) {
+        halfWidth  := size x * 0.5
+        halfHeight := size y * 0.5
+
+        cr setSourceRGB(color x, color y, color z)
+        cr moveTo(-halfWidth, -halfHeight)
+        cr lineTo( halfWidth, -halfHeight)
+        cr lineTo( halfWidth,  halfHeight)
+        cr lineTo(-halfWidth,  halfHeight)
+        cr closePath()
+        cr fill()
     }
 
 }
