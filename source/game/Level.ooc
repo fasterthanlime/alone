@@ -7,6 +7,7 @@ import ui/[Sprite, MainUI]
 import math/Vec2
 
 // libs deps
+import gtk/Gtk // for timeouts
 import structs/ArrayList
 import deadlogger/Log
 
@@ -17,6 +18,7 @@ import deadlogger/Log
 Level: class {
 
     logger := static Log getLogger(This name)
+    FPS := 30.0 // let's target 30FPS
 
     engine: Engine
     actors := ArrayList<Actor> new()
@@ -33,6 +35,12 @@ Level: class {
     }
 
     start: func {
+        // doing a fixed delta for now
+        delta := 1000.0 / FPS
+        Gtk addTimeout(delta, ||
+            update(delta)
+            true // so the callback gets ran again
+        )
         engine ui run()
     }
 
