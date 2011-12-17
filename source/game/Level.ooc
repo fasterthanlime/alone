@@ -3,13 +3,16 @@ use deadlogger
 // game deps
 import Engine
 import ui/[Sprite, MainUI]
+import Hero, Baddie
     
-import math/[Vec2, Vec3]
+import math/[Vec2, Vec3, Random]
 
 // libs deps
 import gtk/Gtk // for timeouts
 import structs/ArrayList
 import deadlogger/Log
+
+logger := static Log getLogger("Level")
 
 /**
  * Where we are eventually going to have level loading stuff,
@@ -17,19 +20,27 @@ import deadlogger/Log
  */
 Level: class {
 
-    logger := static Log getLogger(This name)
     FPS := 30.0 // let's target 30FPS
 
     engine: Engine
     actors := ArrayList<Actor> new()
+    collideables := ArrayList<Collideable> new()
 
     init: func (=engine) {
         logger debug("Loading level...")
 
         // add a bunch of stuff
-        actors add(Hero new(this))
-        actors add(Ground new(this))
-        
+        ground := Ground new(this)
+        actors add(ground)
+
+        hero := Hero new(this, ground y)
+        actors add(hero)
+
+        10 times(||
+            baddie := Baddie new(this, ground y)
+            baddie body pos x = Random randInt(0, engine ui width)
+            actors add(baddie)
+        )
     }
 
     update: func (delta: Float) {
@@ -49,6 +60,22 @@ Level: class {
         engine ui run()
     }
 
+    bind2: func (src, dst: Vec2) {
+        actors add(Binder2 new(this, src, dst))
+    }
+
+    bind3: func (src, dst: Vec3) {
+        actors add(Binder3 new(this, src, dst))
+    }
+
+    collides?: func (c: Collideable, onCollision: Func (Bang)) {
+        for (c2 in collideables) {
+            if (c == c2) continue
+            b := c test(c2)
+            if (b) onCollision(b)
+        }
+    }
+
 }
 
 Actor: class {
@@ -63,20 +90,86 @@ Actor: class {
 
 Ground: class extends Actor {
 
+    y: Float
+    height := 20
+
     init: func (=level) {
         engine := level engine
 
-        ground := RectSprite new(vec2(engine ui width * 0.5, engine ui height - 100))
-        ground size = vec2(engine ui width, 20)
-        ground offset y = 20
+        ground := RectSprite new(vec2(engine ui width * 0.5, engine ui height / 2))
+        ground size = vec2(engine ui width, height)
         ground color = vec3(0.0, 0.0, 0.0)
         engine ui sprites add(ground)
+
+        y = engine ui height / 2 - height / 2
     }
 
 }
 
+Bang: class {
 
-GravityObject: class extends Actor {
+    pos := vec2(0, 0)
+    dir := vec2(0, 1) // unit vector
+    depth := 0.0 // might be negative
+
+}
+
+Collideable: class {
+
+    test: func (c: Collideable) -> Bang {
+        null
+    }
+
+}
+
+Box: class extends Collideable {
+
+    rect: RectSprite
+
+    init: func (=rect) { }
+
+    test: func (c: Collideable) -> Bang {
+        match (c) {
+            case b: Box => testRect(b rect)
+            case => null
+        }
+    }
+
+    testRect: func (rect2: RectSprite) -> Bang {
+        rect1 := rect
+
+        x1 := rect1 pos x
+        y1 := rect1 pos y
+        minx1 := x1 - rect1 size x / 2
+        maxx1 := x1 + rect1 size x / 2
+        miny1 := y1 - rect1 size y / 2
+        maxy1 := y1 + rect1 size y / 2
+
+        x2 := rect2 pos x
+        y2 := rect2 pos y
+        minx2 := x2 - rect2 size x / 2
+        maxx2 := x2 + rect2 size x / 2
+        miny2 := y2 - rect2 size y / 2
+        maxy2 := y2 + rect2 size y / 2
+
+        if (x1 > x2 && minx1 < maxx2) {
+            b := Bang new()
+            return b
+        }
+
+        if (x1 < x2 && maxx1 > minx2) {
+            b := Bang new()
+            return b
+        }
+
+        // TODO: other cases, duh :)
+
+        null
+    }
+}
+
+
+Body: class extends Actor {
 
     pos := vec2(0, 0)
     speed := vec2(0, 0)
@@ -95,89 +188,30 @@ GravityObject: class extends Actor {
 
 }
 
+Binder2: class extends Actor {
 
-Hero: class extends Actor {
+    src, dst: Vec2
 
-    ui: MainUI
-    logger := static Log getLogger(This name)
-    svgSprite : Sprite
-
-    touchesGround := false
-    jumpSpeed := 30.0
-    speed := 18.0
-    speedAlpha := 0.8
-    scale := 0.3
-
-    hb : RectSprite // hit box
-    bb : RectSprite // bounding box
-
-    body: GravityObject
-    direction := 1.0 // 1 = right, -1 = left
-
-    init: func (=level) {
-        ui = level engine ui
-
-        body = GravityObject new(level)
-        body pos = vec2(100, ui height - 300)
-
-        
-        bb = RectSprite new(body pos)
-        bb filled = false
-        bb size = vec2(60, 100)
-        ui debugSprites add(bb)
-
-        hb = RectSprite new(body pos)
-        hb filled = false
-        hb size = vec2(40, 60)
-        hb color = vec3(0.0, 1.0, 0.0)
-        ui debugSprites add(hb)
-
-        svgSprite = SvgSprite new(body pos, "assets/svg/movingObj_Full.svg")
-        svgSprite scale = vec2(scale, scale)
-        // svg graphics are not centered
-        svgSprite offset x = - bb size x / 2
-        svgSprite offset y = - bb size y / 2 - 20
-        ui sprites add(svgSprite)
-    }
+    init: func (=level, =src, =dst) { }
 
     update: func (delta: Float) {
-        if (ui isPressed(Keys LEFT)) {
-            body speed interpolateX(-speed, speedAlpha)
-            svgSprite scale = vec2(scale, scale)
-            svgSprite offset x = - bb size x / 2
-            direction = -1.0
-        } else if (ui isPressed(Keys RIGHT)) {
-            body speed interpolateX(speed, speedAlpha)
-            svgSprite scale = vec2(-scale, scale)
-            svgSprite offset x = bb size x / 2
-            direction = 1.0
-        } else {
-            body speed interpolateX(0, speedAlpha)
-        }
-
-        if (touchesGround && ui isPressed(Keys SPACE)) {
-            body speed y = -jumpSpeed
-        }
-
-        body update(delta)
-
-        // artificial ground collision
-        maxHeight := ui height - 100 - bb size y / 2 + 10
-        if (body pos y > maxHeight) {
-            if (body speed y > 0) {
-                body speed y = 0
-            }
-            body pos y = maxHeight
-            touchesGround = true
-        } else {
-            touchesGround = false
-        }
+        dst x = src x
+        dst y = src y
     }
 
 }
 
+Binder3: class extends Actor {
 
+    src, dst: Vec3
 
+    init: func (=level, =src, =dst) { }
 
+    update: func (delta: Float) {
+        dst x = src x
+        dst y = src y
+        dst z = src z
+    }
 
+}
 

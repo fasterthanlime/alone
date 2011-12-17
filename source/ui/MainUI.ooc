@@ -18,6 +18,7 @@ Keys: enum from UInt {
 
 MainUI: class {
     win: Window
+    debug := false
 
     width, height: Int
 
@@ -94,9 +95,12 @@ MainUI: class {
         sprites each(|sprite|
             sprite draw(cr)
         )
-        debugSprites each(|sprite|
-            sprite draw(cr)
-        )
+
+        if(debug) {
+            debugSprites each(|sprite|
+                sprite draw(cr)
+            )
+        }
 
     }
 

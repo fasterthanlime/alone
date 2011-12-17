@@ -98,13 +98,39 @@ SvgSprite: class extends Sprite {
     path: String
     svg: Svg
 
+    // let's hope none of them will be larger than this
+    width  := 1024
+    height := 1024
+    overScaling := 2.0
+
+    cache: ImageSurface
+
     init: func (=pos, =path) {
         logger debug("Loading svg asset %s" format(path))
+
         svg = Svg new(path)
+        cache = ImageSurface new(CairoFormat ARGB32, width, height)
+
+        // cache one first time
+        cache()
+    }
+    
+    cache: func {
+        cr := Context new(cache)
+        cr setSourceRGBA(0.0, 0.0, 0.0, 0.0)
+        cr paint()
+        cr scale(overScaling, overScaling)
+        svg render(cr)
+        cr destroy()
     }
 
     paint: func (cr: Context) {
-        svg render(cr)
+        cr setAntialias(CairoAntialias SUBPIXEL)
+        cr scale(1.0 / overScaling, 1.0 / overScaling)
+        cr setSourceSurface(cache, 0, 0)
+        cr rectangle(0.0, 0.0, width, height)
+        cr clip()
+        cr paint()
     }
 
     free: func {
