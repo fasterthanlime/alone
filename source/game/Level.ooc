@@ -32,6 +32,7 @@ Level: class {
         actors each(|actor|
             actor update(delta)
         )
+        engine ui draw()
     }
 
     start: func {

@@ -28,11 +28,7 @@ MainUI: class {
         win connect("delete_event", exit) // exit on window close
 
         // redraw on each window move, possibly before!
-        win connect("expose-event", ||
-            cr := GdkContext new(win getWindow())
-            draw(cr)
-            cr destroy()
-        )
+        win connect("expose-event", || draw())
 
         win showAll()
     }
@@ -41,7 +37,13 @@ MainUI: class {
         Gtk main()
     }
 
-    draw: func (cr: Context) {
+    draw: func {
+        cr := GdkContext new(win getWindow())
+        paint(cr)
+        cr destroy()
+    }
+
+    paint: func (cr: Context) {
         background(cr)
         sprites each(|sprite|
             sprite draw(cr)
