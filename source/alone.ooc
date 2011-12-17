@@ -1,7 +1,11 @@
+
+// libs deps
 use zombieconfig
 import zombieconfig
 
+// game deps
 import ui/MainUI
+import game/[Engine, Level]
 
 main: func {
     config := ZombieConfig new("alone.config", |base|
@@ -10,6 +14,10 @@ main: func {
     )
 
     ui := MainUI new(config)
-    ui run()
+
+    engine := Engine new(ui)
+    level := Level new(engine)
+
+    level start()
 }
 

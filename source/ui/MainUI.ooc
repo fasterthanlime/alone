@@ -1,10 +1,12 @@
 use cairo, gtk
 
 // game deps
+import Sprite
 
 // libs deps
 import cairo/[Cairo, GdkCairo] 
 import gtk/[Gtk, Widget, Window]
+import structs/[ArrayList]
 import zombieconfig
 
 
@@ -12,6 +14,8 @@ MainUI: class {
     win: Window
 
     width, height: Int
+
+    sprites := ArrayList<Sprite> new()
 
     init: func (config: ZombieConfig) {
         win = Window new(config["title"])
@@ -39,7 +43,9 @@ MainUI: class {
 
     draw: func (cr: Context) {
         background(cr)
-        triangle(cr)
+        sprites each(|sprite|
+            sprite draw(cr)
+        )
     }
 
     background: func (cr: Context) {

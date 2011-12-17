@@ -11,6 +11,7 @@ Clone it, go to libs/, clone the following:
   * https://github.com/nddrylliog/ooc-gdk
   * https://github.com/nddrylliog/ooc-gtk
   * https://github.com/nddrylliog/ooc-cairo
+  * https://github.com/fredreichbier/deadlogger
 
 Then source "devrc" (or just export OOC\_LIBS=path-to-alone/libs),
 hit `rock -v` in the root directory and you're good to go!
