@@ -19,6 +19,8 @@ MainUI: class {
         width  = config["screenWidth"] toInt()
         height = config["screenHeight"] toInt()
         win setUSize(width as GInt, height as GInt)
+        win setPosition(Window POS_CENTER)
+
         win connect("delete_event", exit) // exit on window close
 
         // redraw on each window move, possibly before!
