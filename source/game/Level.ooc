@@ -32,7 +32,7 @@ Level: class {
         actors each(|actor|
             actor update(delta)
         )
-        engine ui draw()
+        engine ui redraw()
     }
 
     start: func {
@@ -60,14 +60,16 @@ Actor: class {
 Hero: class extends Actor {
 
     logger := static Log getLogger(This name)
+    svgSprite : Sprite
 
     init: func (=level) {
-        level engine ui sprites add(SvgSprite new(vec2(100, 100), "assets/svg/lameTest1.svg"))
-        level engine ui sprites add(Sprite new(vec2(200, 100)))
+        svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/lameTest1.svg")
+        level engine ui sprites add(svgSprite)
     }
 
     update: func (delta: Float) {
         logger debug("Updating hero with delta %.2f" format(delta))
+        svgSprite pos x += delta * 1.0
     }
 
 }

@@ -28,7 +28,7 @@ MainUI: class {
         win connect("delete_event", exit) // exit on window close
 
         // redraw on each window move, possibly before!
-        win connect("expose-event", || draw())
+        win connect("expose-event", || this draw())
 
         win showAll()
     }
@@ -37,8 +37,14 @@ MainUI: class {
         Gtk main()
     }
 
+    redraw: func {
+        gdkWin := win getWindow()
+        gdkWin invalidateRegion(gdkWin getClipRegion(), false)
+    }
+
     draw: func {
-        cr := GdkContext new(win getWindow())
+        gdkWin := win getWindow()
+        cr := GdkContext new(gdkWin)
         paint(cr)
         cr destroy()
     }
