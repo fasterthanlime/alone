@@ -39,7 +39,7 @@ Level: class {
         // doing a fixed delta for now
         delta := 1000.0 / FPS
         Gtk addTimeout(delta, ||
-            update(delta)
+            update(delta / delta)
             true // so the callback gets ran again
         )
         engine ui run()
@@ -61,15 +61,16 @@ Hero: class extends Actor {
 
     logger := static Log getLogger(This name)
     svgSprite : Sprite
+    speed := 1.0
 
     init: func (=level) {
-        svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/lameTest1.svg")
+        svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/movingObj_Full.svg", "Layer_1")
         level engine ui sprites add(svgSprite)
     }
 
     update: func (delta: Float) {
         logger debug("Updating hero with delta %.2f" format(delta))
-        svgSprite pos x += delta * 1.0
+        svgSprite pos x += delta * speed
     }
 
 }

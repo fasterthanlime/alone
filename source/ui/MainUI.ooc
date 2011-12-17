@@ -6,6 +6,7 @@ import Sprite
 // libs deps
 import cairo/[Cairo, GdkCairo] 
 import gtk/[Gtk, Widget, Window]
+import gdk/[Event]
 import structs/[ArrayList]
 import zombieconfig
 
@@ -25,16 +26,23 @@ MainUI: class {
         win setUSize(width as GInt, height as GInt)
         win setPosition(Window POS_CENTER)
 
-        win connect("delete_event", exit) // exit on window close
+        win connect("delete-event", exit) // exit on window close
 
         // redraw on each window move, possibly before!
         win connect("expose-event", || this draw())
+
+        // capture key events!
+        win connectNaked("key-press-event", this, keyPressed)
 
         win showAll()
     }
 
     run: func {
         Gtk main()
+    }
+
+    keyPressed: func (ev: EventKey*) {
+        "Key pressed! event = %p" printfln(ev)
     }
 
     redraw: func {

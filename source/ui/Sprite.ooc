@@ -63,14 +63,16 @@ Sprite: class {
 SvgSprite: class extends Sprite {
 
     path: String
+    sub: String
     svg: Svg
 
-    init: func (=pos, =path) {
+    init: func (=pos, =path, =sub) {
         logger debug("Loading svg asset %s" format(path))
         svg = Svg new(path)
     }
 
     paint: func (cr: Context) {
+        // svg render(cr, sub toCString())
         svg render(cr)
     }
 
