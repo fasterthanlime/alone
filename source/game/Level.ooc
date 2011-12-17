@@ -59,18 +59,24 @@ Actor: class {
 
 Hero: class extends Actor {
 
+    ui: MainUI
     logger := static Log getLogger(This name)
     svgSprite : Sprite
-    speed := 1.0
+    speed := 5.0
 
     init: func (=level) {
+        ui = level engine ui
         svgSprite = SvgSprite new(vec2(100, 100), "assets/svg/movingObj_Full.svg")
-        level engine ui sprites add(svgSprite)
+        ui sprites add(svgSprite)
     }
 
     update: func (delta: Float) {
         // logger debug("Updating hero with delta %.2f" format(delta))
-        svgSprite pos x += delta * speed
+        if (ui isPressed(Keys LEFT)) {
+            svgSprite pos x -= delta * speed
+        } else if (ui isPressed(Keys RIGHT)) {
+            svgSprite pos x += delta * speed
+        }
     }
 
 }

@@ -10,6 +10,10 @@ import gdk/[Event]
 import structs/[ArrayList]
 import zombieconfig
 
+Keys: enum from UInt {
+    LEFT  = 65361
+    RIGHT = 65363
+}
 
 MainUI: class {
     win: Window
@@ -18,7 +22,11 @@ MainUI: class {
 
     sprites := ArrayList<Sprite> new()
 
+    MAX_KEY := static 65536
+    keyState: Bool*
+
     init: func (config: ZombieConfig) {
+        keyState = gc_malloc(Bool size * MAX_KEY)
         win = Window new(config["title"])
 
         width  = config["screenWidth"] toInt()
@@ -30,7 +38,8 @@ MainUI: class {
 
         // redraw on each window move, possibly before!
         win connect("expose-event", || draw())
-        win connectKeyEvent("key-press-event", |ev| keyPressed(ev))
+        win connectKeyEvent("key-press-event",   |ev| keyPressed (ev))
+        win connectKeyEvent("key-release-event", |ev| keyReleased(ev))
 
         win showAll()
     }
@@ -41,6 +50,23 @@ MainUI: class {
 
     keyPressed: func (ev: EventKey*) {
         "Key pressed! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        if (ev@ keyval < MAX_KEY) {
+            keyState[ev@ keyval] = true
+        }
+    }
+
+    keyReleased: func (ev: EventKey*) {
+        "Key released! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        if (ev@ keyval < MAX_KEY) {
+            keyState[ev@ keyval] = false
+        }
+    }
+
+    isPressed: func (keyval: Int) -> Bool {
+        if (keyval >= MAX_KEY) {
+            return false
+        }
+        keyState[keyval]
     }
 
     redraw: func {

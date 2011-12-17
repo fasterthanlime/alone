@@ -12,6 +12,7 @@ Sprite: class {
 
     logger := static Log getLogger(This name)
     pos: Vec2
+    scale := vec2(1.0, 1.0)
 
     init: func (=pos) {
         logger debug("Created %s at %s" format(class name, pos _))
@@ -31,6 +32,7 @@ Sprite: class {
     draw: func (cr: Context) {
         cr save()
         cr translate(pos x, pos y)
+        cr scale(scale x, scale y)
 
         paint(cr)
 
