@@ -53,11 +53,6 @@ Hero: class extends Actor {
         mainSprite offset x = - bb size x / 2
         mainSprite offset y = - bb size y / 2 - 20
         ui sprites add(mainSprite)
-
-        reflectionSprite = SvgSprite new(vec2(0, 0), "assets/svg/movingObj_Full.svg")
-        reflectionSprite scale = vec2(scale, -scale)
-        reflectionSprite offset y = bb size y / 2 + 20
-        ui sprites add(reflectionSprite)
     }
 
     update: func (delta: Float) {
@@ -78,6 +73,13 @@ Hero: class extends Actor {
 
         body update(delta)
 
+        alphaAlpha := 0.1
+        mainSprite alpha = mainSprite alpha * (1 - alphaAlpha) +
+                        (body speed norm() / 18.0 + 0.1) * alphaAlpha
+        if (mainSprite alpha > 1.0) {
+            mainSprite alpha = 1.0
+        }
+
         // artificial ground collision
         maxHeight := groundHeight - bb size y / 2
         if (body pos y > maxHeight) {
@@ -91,12 +93,7 @@ Hero: class extends Actor {
         }
 
         mainSprite       offset x = direction * bb size x / 2
-        reflectionSprite offset x = direction * bb size x / 2
-
         mainSprite       scale x = - direction * scale
-        reflectionSprite scale x = - direction * scale
-
-        reflectionSprite pos = vec2(body pos x, groundHeight + (groundHeight - body pos y) + 20)
     }
 
 }

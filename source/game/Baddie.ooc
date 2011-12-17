@@ -53,6 +53,9 @@ Baddie: class extends Actor {
 
         mainSprite = EllipseSprite new(body pos)
         mainSprite size = vec2(15, 15)
+        mainSprite color = vec3(0.4, 0.4, Random randInt(0, 255) / 255.0)
+        mainSprite alpha = 0.4
+        ui sprites add(bb)
         ui sprites add(mainSprite)
 
         box = Box new(bb)

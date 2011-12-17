@@ -182,7 +182,7 @@ SvgSprite: class extends Sprite {
         cr setSourceSurface(cache, 0, 0)
         cr rectangle(0.0, 0.0, width, height)
         cr clip()
-        cr paint()
+        cr paintWithAlpha(alpha)
     }
 
     free: func {
