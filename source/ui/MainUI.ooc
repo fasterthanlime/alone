@@ -55,14 +55,18 @@ MainUI: class {
     }
 
     keyPressed: func (ev: EventKey*) {
-        "Key pressed! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        if(debug) {
+            "Key pressed! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        }
         if (ev@ keyval < MAX_KEY) {
             keyState[ev@ keyval] = true
         }
     }
 
     keyReleased: func (ev: EventKey*) {
-        "Key released! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        if(debug) {
+            "Key released! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
+        }
         if (ev@ keyval < MAX_KEY) {
             keyState[ev@ keyval] = false
         }

@@ -7,7 +7,8 @@ import math/[Vec2, Vec3, Random]
 
 BaddieState: enum {
     CMON,
-    GTFO
+    GTFO,
+    WTF
 }
 
 Baddie: class extends Actor {
@@ -60,21 +61,28 @@ Baddie: class extends Actor {
 
     update: func (delta: Float) {
         diff := hero body pos sub(body pos)
+        motion := diff
+        alpha := 0.05
 
         match (state) {
             case BaddieState CMON =>
-                // nuffin to do
+                motion = diff
             case BaddieState GTFO =>
-                diff = diff mul(-1.0)
+                alpha = 0.2
+                motion = diff mul(-1)
+            case BaddieState WTF =>
+                motion = vec2(Random randInt(-200, 200), Random randInt(-200, 200))
         }
 
-        if (hero body speed norm() < 3.0 && diff norm() < 200.0) {
+        if (hero body speed norm() > 3.0) {
+            state = BaddieState CMON 
+        } else if (diff norm() < 300.0) {
             state = BaddieState GTFO
         } else {
-            state = BaddieState CMON
+            state = BaddieState WTF
         }
 
-        body speed interpolate(diff normalized() mul(speed), 0.05)
+        body speed interpolate(motion normalized() mul(speed), alpha)
         body update(delta)
     }
 
