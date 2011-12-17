@@ -30,6 +30,11 @@ Level: class {
         logger debug("Loading level...")
 
         // add a bunch of stuff
+        bg := PngSprite new(vec2(0, 0), "assets/png/background1.png")
+        // bg offset x = - bg width  / 2.0
+        // bg offset y = - bg height / 2.0
+        engine ui bgSprites add(bg)
+
         ground := Ground new(this)
         actors add(ground)
 
@@ -91,17 +96,17 @@ Actor: class {
 Ground: class extends Actor {
 
     y: Float
-    height := 20
 
     init: func (=level) {
         engine := level engine
 
-        ground := RectSprite new(vec2(engine ui width * 0.5, engine ui height / 2))
-        ground size = vec2(engine ui width, height)
+        ground := RectSprite new(vec2(engine ui width * 0.5, engine ui height * 0.75))
+        ground size = vec2(engine ui width, engine ui height * 0.5)
         ground color = vec3(0.0, 0.0, 0.0)
-        engine ui sprites add(ground)
+        ground alpha = 0.9
+        engine ui fgSprites add(ground)
 
-        y = engine ui height / 2 - height / 2
+        y = engine ui height / 2
     }
 
 }

@@ -15,6 +15,7 @@ Sprite: class {
     offset := vec2(0.0, 0.0)
     scale := vec2(1.0, 1.0)
     color := vec3(1.0, 0.0, 0.0)
+    alpha := 1.0
 
     init: func (=pos) {
         logger debug("Created %s at %s" format(class name, pos _))
@@ -35,6 +36,7 @@ Sprite: class {
         cr save()
         cr translate(pos x + offset x, pos y + offset y)
         cr scale(scale x, scale y)
+        cr setSourceRGBA(color x, color y, color z, alpha)
 
         paint(cr)
 
@@ -48,7 +50,6 @@ Sprite: class {
     paint: func (cr: Context) {
         cr setLineWidth(3)
 
-        cr setSourceRGB(color x, color y, color z)
         cr moveTo(0, 0)
         cr lineTo(0, 50)
         cr relLineTo(50, 0)
@@ -78,7 +79,6 @@ RectSprite: class extends Sprite {
         halfWidth  := size x * 0.5
         halfHeight := size y * 0.5
 
-        cr setSourceRGB(color x, color y, color z)
         cr moveTo(-halfWidth, -halfHeight)
         cr lineTo( halfWidth, -halfHeight)
         cr lineTo( halfWidth,  halfHeight)
@@ -93,10 +93,61 @@ RectSprite: class extends Sprite {
 
 }
 
+/**
+ * An ellipsoid, initially a 1x1 circle
+ */
+EllipseSprite: class extends Sprite {
+
+    init: super func
+
+    size := vec2(1.0, 1.0)
+    filled := true
+
+    paint: func (cr: Context) {
+        // full circle!
+        cr scale(size x, size y)
+        cr arc(0.0, 0.0, 1.0, 0.0, 3.142 * 2)
+        if (filled) {
+            cr fill()
+        } else {
+            cr stroke()
+        }
+    }
+
+}
+
+PngSprite: class extends Sprite {
+
+    path: String
+
+    image: ImageSurface
+
+    width  := -1
+    height := -1
+
+    init: func (=pos, =path) {
+        logger debug("Loading png asset %s" format(path))
+
+        image = ImageSurface new(path)
+        width  = image getWidth()
+        height = image getHeight()
+
+        logger debug("%s is of size %dx%d" format(path, width, height))
+    }
+
+    paint: func (cr: Context) {
+        cr setSourceSurface(image, 0, 0)
+        cr rectangle(0.0, 0.0, width, height)
+        cr clip()
+        cr paint()
+    }
+
+}
+
 SvgSprite: class extends Sprite {
 
     path: String
-    svg: Svg
+    svg: Svg // TODO: don't load the same svg 239487 times, have a cache
 
     // let's hope none of them will be larger than this
     width  := 1024
@@ -125,6 +176,7 @@ SvgSprite: class extends Sprite {
     }
 
     paint: func (cr: Context) {
+        // TODO: is that even necessary?
         cr setAntialias(CairoAntialias SUBPIXEL)
         cr scale(1.0 / overScaling, 1.0 / overScaling)
         cr setSourceSurface(cache, 0, 0)

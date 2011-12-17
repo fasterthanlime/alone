@@ -1,4 +1,5 @@
 libs/*
+build/*
 .libs
 alone
 .*.swp

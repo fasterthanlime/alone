@@ -12,7 +12,7 @@ Baddie: class extends Actor {
     touchesGround := false
     groundHeight := 0.0
 
-    mainSprite: SvgSprite
+    mainSprite: EllipseSprite
     bb: RectSprite // bounding box
     box: Box
 
@@ -35,14 +35,13 @@ Baddie: class extends Actor {
         body = Body new(level)
 
         bb = RectSprite new(body pos)
-        bb size = vec2(60, 100)
+        bb filled = false
+        bb size = vec2(10, 10)
         bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
-        // ui sprites add(bb)
+        ui sprites add(bb)
 
-        mainSprite = SvgSprite new(body pos, "assets/svg/lameTest1.svg")
-        mainSprite scale = vec2(scale, scale)
-        mainSprite offset x = - bb size x / 2
-        mainSprite offset y = - bb size y / 2
+        mainSprite = EllipseSprite new(body pos)
+        mainSprite size = vec2(15, 15)
         ui sprites add(mainSprite)
 
         box = Box new(bb)

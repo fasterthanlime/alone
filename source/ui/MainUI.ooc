@@ -25,6 +25,7 @@ MainUI: class {
     // different passes
     bgSprites := ArrayList<Sprite> new()
     sprites := ArrayList<Sprite> new()
+    fgSprites := ArrayList<Sprite> new()
     debugSprites := ArrayList<Sprite> new()
 
     MAX_KEY := static 65536
@@ -89,17 +90,12 @@ MainUI: class {
     paint: func (cr: Context) {
         background(cr)
 
-        bgSprites each(|sprite|
-            sprite draw(cr)
-        )
-        sprites each(|sprite|
-            sprite draw(cr)
-        )
+        bgSprites each(|sprite| sprite draw(cr))
+        sprites each(|sprite| sprite draw(cr))
+        fgSprites each(|sprite| sprite draw(cr))
 
         if(debug) {
-            debugSprites each(|sprite|
-                sprite draw(cr)
-            )
+            debugSprites each(|sprite| sprite draw(cr))
         }
 
     }
