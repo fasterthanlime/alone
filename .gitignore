@@ -1,0 +1,5 @@
+libs/*
+.libs
+alone
+.*.swp
+_tmp
