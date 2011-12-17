@@ -1,4 +1,4 @@
-use deadlogger, cairo
+use deadlogger, cairo, rsvg
 
 // game deps
 import math/Vec2
@@ -6,6 +6,7 @@ import math/Vec2
 // libs deps
 import deadlogger/Log
 import cairo/Cairo
+import rsvg
 
 Sprite: class {
 
@@ -50,6 +51,32 @@ Sprite: class {
         cr closePath()
         cr stroke()
 
+    }
+
+    free: func {
+        // in theory, release resources
+        // in practice, nothing to do in the base class
+    }
+
+}
+
+SvgSprite: class extends Sprite {
+
+    path: String
+    svg: Svg
+
+    init: func (=pos, =path) {
+        logger debug("Loading svg asset %s" format(path))
+        svg = Svg new(path)
+    }
+
+    paint: func (cr: Context) {
+        svg render(cr)
+    }
+
+    free: func {
+        // here we have resources to free
+        svg free()
     }
 
 }

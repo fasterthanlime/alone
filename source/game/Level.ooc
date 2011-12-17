@@ -53,7 +53,8 @@ Hero: class extends Actor {
     logger := static Log getLogger(This name)
 
     init: func (=level) {
-        level engine ui sprites add(Sprite new(vec2(100, 100)))
+        level engine ui sprites add(SvgSprite new(vec2(100, 100), "assets/svg/lameTest1.svg"))
+        level engine ui sprites add(Sprite new(vec2(200, 100)))
     }
 
     update: func (delta: Float) {
