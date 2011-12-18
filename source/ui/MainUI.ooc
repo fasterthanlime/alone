@@ -32,10 +32,9 @@ MainUI: class {
 
     level: Level // current level being drawn
 
-    scale := 1.0
     campos := vec2(0.0, 0.0)
-
     mousepos := vec2(0.0, 0.0)
+    mouseworldpos := vec2(0.0, 0.0)
 
     init: func (config: ZombieConfig) {
         keyState = gc_malloc(Bool size * MAX_KEY)
@@ -82,7 +81,9 @@ MainUI: class {
     }
 
     mouseMoved: func (ev: EventMotion*) {
-        "Motion at (%.2f, %.2f)" printfln(ev@ x, ev@ y)
+        if(debug) {
+            "Motion at (%.2f, %.2f)" printfln(ev@ x, ev@ y)
+        }
         (mousepos x, mousepos y) = (ev@ x, ev@ y)
     }
 
@@ -110,21 +111,8 @@ MainUI: class {
         campos interpolate!(camposTarget, 0.2)
         cr translate (-campos x, -campos y)
 
-        /*
-        cr translate (  width / 2,   height / 2)
-        cr scale(scale, scale)
-        alphaScale := 0.05
-        if(level hero body speed norm() < 3.0) {
-            if (scale < 1.5) {
-                scale = scale * (1 - alphaScale) + (scale + 0.1) * alphaScale
-            }
-        } else {
-            if (scale > 0.9) {
-                scale = scale * (1 - alphaScale) + (scale - 0.1) * alphaScale
-            }
-        }
-        cr translate (- width / 2, - height / 2)
-        */
+        mouseworldpos x = mousepos x + campos x
+        mouseworldpos y = mousepos y + campos y
 
         background(cr)
 

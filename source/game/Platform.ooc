@@ -27,11 +27,14 @@ Platform: class extends Actor {
         mainSprite = PngSprite new(pos, "assets/png/platforms/%s.png" format(kind))
         mainSprite scale = vec2(0.51, 0.51)
         mainSprite offset = vec2(-width / 2, -height / 2)
-        level bgSprites add(mainSprite)
+        level sprites add(mainSprite)
 
         box = Box new(bb)
         level collideables add(box)
     }
 
-    update: func (delta: Float)
+    update: func (delta: Float) {
+        bb pos = pos
+        mainSprite pos = pos
+    }
 }
