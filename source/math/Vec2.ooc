@@ -90,5 +90,6 @@ Vec2: class {
 // cuz I'm lazy
 vec2: func (x, y: Float) -> Vec2 { Vec2 new(x, y) }
 vec2: func ~square (xy: Float) -> Vec2 { Vec2 new(xy, xy) }
+vec2: func ~clone (v: Vec2) -> Vec2 { Vec2 new(v x, v y) }
 vec: func ~two (x, y: Float) -> Vec2 { Vec2 new(x, y) }
 

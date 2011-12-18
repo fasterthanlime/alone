@@ -40,13 +40,22 @@ Editor: class extends Actor {
             }
         )
 
+        input onMousePress(Buttons LEFT, || leftClick())
+
         currentPlatform = Platform new(level, vec2(INF), "metal")
         currentPlatform mainSprite alpha = 0.0
         level actors add(currentPlatform)
     }
 
+    leftClick: func {
+        if (ui mode != UIMode EDITOR) return
+
+        // TODO: snap to grid
+        platform := Platform new(level, vec2(currentPlatform pos), currentPlatform kind)
+        level actors add(platform)
+    }
+
     moveCamera: func (x, y: Float) {
-        logger info("Moving camera (%.2f, %.2f)" format(x, y))
         level camera pos add!(vec2(x, y) mul(cameraSpeed))
     }
 

@@ -93,7 +93,7 @@ Input: class {
     MAX_KEY := static 65536
     keyState: Bool*
 
-    debug := true
+    debug := false
 
     ui: MainUI
     win: Window
@@ -122,6 +122,15 @@ Input: class {
             match (ev) {
                 case kp: KeyPress => 
                     if(kp code == which) cb()
+            }
+        )
+    }
+
+    onMousePress: func (which: UInt, cb: Func) {
+        onEvent(|ev|
+            match (ev) {
+                case mp: MousePress =>
+                    if(mp button == which) cb()
             }
         )
     }
