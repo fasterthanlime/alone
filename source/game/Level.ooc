@@ -12,25 +12,24 @@ import gtk/Gtk // for timeouts
 import structs/ArrayList
 import deadlogger/Log
 
-logger := static Log getLogger("Level")
 
-/**
- * Where we are eventually going to have level loading stuff,
- * probably all hardcoded for a start though
- */
 Level: class {
 
+    logger := static Log getLogger("Level")
     FPS := 30.0 // let's target 30FPS
 
     engine: Engine
     actors := ArrayList<Actor> new()
     collideables := ArrayList<Collideable> new()
 
+    name := "<untitled>"
+    author := "<unknown>"
+
     init: func (=engine) {
         logger debug("Loading level...")
 
         // add a bunch of stuff
-        bg := PngSprite new(vec2(0, 0), "assets/png/background1.png")
+        bg := PngSprite new(vec2(0, 0), "assets/png/egypt.png")
         // bg offset x = - bg width  / 2.0
         // bg offset y = - bg height / 2.0
         engine ui bgSprites add(bg)

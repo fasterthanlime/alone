@@ -1,0 +1,28 @@
+{
+    "name": "Welcome to hell",
+    "author": "Amos Wenger",
+    "objects": [
+        {
+            "type": "background",
+            "path": "assets/png/egypt.png"
+        },
+
+        {
+            "type": "swarm",
+            "pos": [ 40.0, 40.0 ],
+            "num": 30
+        },
+
+        {
+            "type": "hero",
+            "pos": [ 200.0, 200.0 ]
+        },
+
+        {
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 200.0, 500.0 ],
+            "size": [ 100.0, 40.0 ]
+        }
+    ]
+}

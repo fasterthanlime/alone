@@ -2,11 +2,11 @@
 // libs deps
 use zombieconfig, deadlogger
 import zombieconfig
-import deadlogger/[Log, Handler, Level, Formatter, Filter]
+import deadlogger/[Log, Handler, Formatter, Filter]
 
 // game deps
 import ui/MainUI
-import game/[Engine, Level]
+import game/[Engine, Level, LevelLoader]
 
 main: func {
     // setup logging
@@ -23,7 +23,11 @@ main: func {
     // create main ui, initialize engine
     ui := MainUI new(config)
     engine := Engine new(ui)
-    level := Level new(engine)
+
+    loader := LevelLoader new(engine)
+
+    level: Level
+    level = loader load("assets/levels/level1.json")
 
     level start()
 }
