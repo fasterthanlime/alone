@@ -10,7 +10,7 @@
         {
             "type": "swarm",
             "pos": [ 40.0, 40.0 ],
-            "num": 30
+            "population": 30
         },
 
         {

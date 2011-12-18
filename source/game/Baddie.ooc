@@ -15,9 +15,6 @@ Baddie: class extends Actor {
 
     ui: MainUI
 
-    touchesGround := false
-    groundHeight := 0.0
-
     hero: Hero
 
     mainSprite: EllipseSprite
@@ -39,7 +36,8 @@ Baddie: class extends Actor {
 
     state := BaddieState CMON
 
-    init: func (=level, =groundHeight, =hero) {
+    init: func (=level) {
+        hero = level hero
         ui = level engine ui
 
         body = Body new(level)
@@ -49,14 +47,14 @@ Baddie: class extends Actor {
         bb filled = false
         bb size = vec2(10, 10)
         bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
-        ui sprites add(bb)
+        level sprites add(bb)
 
         mainSprite = EllipseSprite new(body pos)
         mainSprite size = vec2(15, 15)
         mainSprite color = vec3(0.4, 0.4, Random randInt(0, 255) / 255.0)
         mainSprite alpha = 0.4
-        ui sprites add(bb)
-        ui sprites add(mainSprite)
+        level sprites add(bb)
+        level sprites add(mainSprite)
 
         box = Box new(bb)
         level collideables add(box)
@@ -85,7 +83,7 @@ Baddie: class extends Actor {
             state = BaddieState WTF
         }
 
-        body speed interpolate(motion normalized() mul(speed), alpha)
+        body speed interpolate!(motion normalized() mul(speed), alpha)
         body update(delta)
     }
 

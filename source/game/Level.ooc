@@ -25,26 +25,17 @@ Level: class {
     name := "<untitled>"
     author := "<unknown>"
 
+    // different passes
+    bgSprites := ArrayList<Sprite> new()
+    sprites := ArrayList<Sprite> new()
+    fgSprites := ArrayList<Sprite> new()
+    debugSprites := ArrayList<Sprite> new()
+
+    hero: Hero
+
     init: func (=engine) {
-        logger debug("Loading level...")
-
-        // add a bunch of stuff
-        bg := PngSprite new(vec2(0, 0), "assets/png/egypt.png")
-        // bg offset x = - bg width  / 2.0
-        // bg offset y = - bg height / 2.0
-        engine ui bgSprites add(bg)
-
-        ground := Ground new(this)
-        actors add(ground)
-
-        hero := Hero new(this, ground y)
+        hero = Hero new(this, engine ui height - 40)
         actors add(hero)
-
-        25 times(||
-            baddie := Baddie new(this, ground y, hero)
-            baddie body pos x = Random randInt(0, engine ui width)
-            actors add(baddie)
-        )
     }
 
     update: func (delta: Float) {
@@ -89,24 +80,6 @@ Actor: class {
     init: func (=level)
 
     update: func (delta: Float)
-
-}
-
-Ground: class extends Actor {
-
-    y: Float
-
-    init: func (=level) {
-        engine := level engine
-
-        ground := RectSprite new(vec2(engine ui width * 0.5, engine ui height * 0.75))
-        ground size = vec2(engine ui width, engine ui height * 0.5)
-        ground color = vec3(0.0, 0.0, 0.0)
-        ground alpha = 0.9
-        engine ui fgSprites add(ground)
-
-        y = engine ui height / 2
-    }
 
 }
 

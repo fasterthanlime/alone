@@ -28,6 +28,7 @@ main: func {
 
     level: Level
     level = loader load("assets/levels/level1.json")
+    ui level = level
 
     level start()
 }

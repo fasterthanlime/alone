@@ -11,10 +11,11 @@ import deadlogger/Log
 
 Hero: class extends Actor {
 
-    ui: MainUI
     logger := static Log getLogger(This name)
     mainSprite : Sprite
     reflectionSprite : Sprite
+
+    ui: MainUI
 
     groundHeight := 0.0
     touchesGround := false
@@ -32,39 +33,38 @@ Hero: class extends Actor {
 
     init: func (=level, =groundHeight) {
         ui = level engine ui
-
         body = Body new(level)
-        body pos = vec2(100, ui height - 300)
-
         
         bb = RectSprite new(body pos)
         bb filled = false
         bb size = vec2(60, 100)
-        ui debugSprites add(bb)
+        level debugSprites add(bb)
 
         hb = RectSprite new(body pos)
         hb filled = false
         hb size = vec2(40, 60)
         hb color = vec3(0.0, 1.0, 0.0)
-        ui debugSprites add(hb)
+        level debugSprites add(hb)
 
         mainSprite = SvgSprite new(body pos, "assets/svg/movingObj_Full.svg")
         mainSprite scale = vec2(scale, scale)
         mainSprite offset x = - bb size x / 2
         mainSprite offset y = - bb size y / 2 - 20
-        ui sprites add(mainSprite)
+        level sprites add(mainSprite)
     }
 
     update: func (delta: Float) {
+        // logger info("Position = %s" format(body pos _)) 
+
         if (ui isPressed(Keys LEFT)) {
-            body speed interpolateX(-speed, speedAlpha)
+            body speed interpolateX!(-speed, speedAlpha)
             direction = -1.0
         } else if (ui isPressed(Keys RIGHT)) {
-            body speed interpolateX(speed, speedAlpha)
+            body speed interpolateX!(speed, speedAlpha)
             mainSprite scale = vec2(-scale, scale)
             direction = 1.0
         } else {
-            body speed interpolateX(0, speedAlpha)
+            body speed interpolateX!(0, speedAlpha)
         }
 
         if (touchesGround && ui isPressed(Keys SPACE)) {
@@ -73,9 +73,10 @@ Hero: class extends Actor {
 
         body update(delta)
 
+        minAlpha := 0.2
         alphaAlpha := 0.1
         mainSprite alpha = mainSprite alpha * (1 - alphaAlpha) +
-                        (body speed norm() / 18.0 + 0.1) * alphaAlpha
+                        (body speed norm() / 18.0 + minAlpha) * alphaAlpha
         if (mainSprite alpha > 1.0) {
             mainSprite alpha = 1.0
         }
@@ -92,6 +93,7 @@ Hero: class extends Actor {
             touchesGround = false
         }
 
+        mainSprite pos = body pos
         mainSprite       offset x = direction * bb size x / 2
         mainSprite       scale x = - direction * scale
     }

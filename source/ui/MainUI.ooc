@@ -1,9 +1,12 @@
-use cairo, gtk
+use cairo, gtk, deadlogger
 
 // game deps
 import Sprite
+import game/[Level, Hero]
+import math/[Vec2, Vec3]
 
 // libs deps
+import deadlogger/Log
 import cairo/[Cairo, GdkCairo] 
 import gtk/[Gtk, Widget, Window]
 import gdk/[Event]
@@ -22,14 +25,15 @@ MainUI: class {
 
     width, height: Int
 
-    // different passes
-    bgSprites := ArrayList<Sprite> new()
-    sprites := ArrayList<Sprite> new()
-    fgSprites := ArrayList<Sprite> new()
-    debugSprites := ArrayList<Sprite> new()
-
     MAX_KEY := static 65536
     keyState: Bool*
+
+    logger := static Log getLogger(This name)
+
+    level: Level // current level being drawn
+
+    scale := 1.0
+    campos := vec2(0.0, 0.0)
 
     init: func (config: ZombieConfig) {
         keyState = gc_malloc(Bool size * MAX_KEY)
@@ -92,14 +96,36 @@ MainUI: class {
     }
 
     paint: func (cr: Context) {
+        camposTarget := level hero body pos sub(vec2(width / 2, height / 2))
+        campos interpolate!(camposTarget, 0.2)
+        cr translate (-campos x, -campos y)
+
+        cr translate (  width / 2,   height / 2)
+        cr scale(scale, scale)
+        alphaScale := 0.05
+        if(level hero body speed norm() < 3.0) {
+            if (scale < 1.5) {
+                scale = scale * (1 - alphaScale) + (scale + 0.1) * alphaScale
+            }
+        } else {
+            if (scale > 0.9) {
+                scale = scale * (1 - alphaScale) + (scale - 0.1) * alphaScale
+            }
+        }
+        cr translate (- width / 2, - height / 2)
+
         background(cr)
 
-        bgSprites each(|sprite| sprite draw(cr))
-        sprites each(|sprite| sprite draw(cr))
-        fgSprites each(|sprite| sprite draw(cr))
-
-        if(debug) {
-            debugSprites each(|sprite| sprite draw(cr))
+        // draw level
+        if (level) {
+            level bgSprites each(|sprite| sprite draw(cr))
+            level sprites each(|sprite| sprite draw(cr))
+            level fgSprites each(|sprite| sprite draw(cr))
+            if(debug) {
+                level debugSprites each(|sprite| sprite draw(cr))
+            }
+        } else {
+            logger error("No level set!")
         }
 
     }

@@ -18,9 +18,7 @@ Sprite: class {
     color := vec3(1.0, 0.0, 0.0)
     alpha := 1.0
 
-    init: func (=pos) {
-        logger debug("Created %s at %s" format(class name, pos _))
-    }
+    init: func (=pos)
    
     /*
      * This is where you have to draw the line between
