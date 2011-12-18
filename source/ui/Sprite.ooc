@@ -154,7 +154,7 @@ PngSprite: class extends Sprite {
         cr setSourceSurface(image, 0, 0)
         cr rectangle(0, 0, width, height)
         cr clip()
-        cr paint()
+        cr paintWithAlpha(alpha)
         cr restore()
     }
 

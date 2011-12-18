@@ -22,7 +22,7 @@ Keys: enum from UInt {
 MainUI: class {
     win: Window
     debug := false
-    debugRender := true
+    debugRender := false
 
     width, height: Int
 
@@ -122,7 +122,7 @@ MainUI: class {
             level bgSprites each(|sprite| sprite draw(cr))
             level sprites each(|sprite| sprite draw(cr))
             level fgSprites each(|sprite| sprite draw(cr))
-                if(debug || debugRender) {
+            if(debug || debugRender) {
                 level debugSprites each(|sprite| sprite draw(cr))
             }
         } else {

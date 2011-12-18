@@ -2,7 +2,7 @@ use deadlogger
 
 // game deps
 import ui/[Sprite, MainUI]
-import Engine, Level
+import Engine, Level, Collision
 
 import math/[Vec2, Vec3]
 
@@ -81,7 +81,7 @@ Hero: class extends Actor {
         level collides?(box, |bang|
             // we might need multi-constraint resolution
             // later on
-            logger info ("Bang, dir %s, depth %.2f" format(bang dir _, bang depth))
+            // logger info ("Bang, dir %s, depth %.2f" format(bang dir _, bang depth))
             body pos add!(bang dir mul(bang depth))
             body speed project!(bang dir perp())
             touchesGround = true

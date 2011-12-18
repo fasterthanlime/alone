@@ -1,7 +1,7 @@
 
 // game deps
 import ui/[Sprite, MainUI]
-import Engine, Level, Hero
+import Engine, Level, Hero, Collision
 
 import math/[Vec2, Vec3, Random]
 
