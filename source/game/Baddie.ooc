@@ -47,8 +47,7 @@ Baddie: class extends Actor {
         bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
         // level sprites add(bb)
 
-        mainSprite = SvgSprite new(body pos, "assets/svg/baddies/Baddie1_Full.svg")
-        mainSprite scale = vec2(0.2, 0.2)
+        mainSprite = SvgSprite new(body pos, 0.2, 100, 100, "assets/svg/baddies/Baddie1_Full.svg")
         mainSprite offset = vec2(-40, -40)
         level sprites add(mainSprite)
 

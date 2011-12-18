@@ -23,7 +23,7 @@ Hero: class extends Actor {
     jumpSpeed := 30.0
     speed := 18.0
     speedAlpha := 0.8
-    scale := 0.3
+    scale := 1.0
 
     hb : RectSprite // hit box
     bb : RectSprite // bounding box
@@ -49,8 +49,7 @@ Hero: class extends Actor {
         hb color = vec3(0.0, 1.0, 0.0)
         level debugSprites add(hb)
 
-        mainSprite = SvgSprite new(body pos, "assets/svg/movingObj_Full.svg")
-        mainSprite scale = vec2(scale, scale)
+        mainSprite = SvgSprite new(body pos, 0.3, 120, 200, "assets/svg/movingObj_Full.svg")
         mainSprite offset x = - bb size x / 2
         mainSprite offset y = - bb size y / 2 - 20
         level sprites add(mainSprite)

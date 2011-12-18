@@ -121,18 +121,22 @@ PngSprite: class extends Sprite {
     tiled := false
 
     image: ImageSurface
+    imageCache := static HashMap<String, ImageSurface> new()
 
     width  := -1
     height := -1
 
     init: func (=pos, =path) {
-        logger debug("Loading png asset %s" format(path))
+        if(imageCache contains?(path)) {
+            image = imageCache get(path)
+        } else {
+            image = ImageSurface new(path)
+            logger debug("Loaded png asset %s (%dx%d)" format(path, image getWidth(), image getHeight()))
+            imageCache put(path, image)
+        }
 
-        image = ImageSurface new(path)
         width  = image getWidth()
         height = image getHeight()
-
-        logger debug("%s is of size %dx%d" format(path, width, height))
     }
 
     paint: func (cr: Context) {
@@ -160,38 +164,44 @@ PngSprite: class extends Sprite {
 
 }
 
+CachedSvg: class {
+
+    svg: Svg
+    image: ImageSurface
+
+    init: func (=svg, =image)
+
+}
+
 SvgSprite: class extends Sprite {
 
     path: String
     svg: Svg
-    svgCache := static HashMap<String, Svg> new()
+    svgCache := static HashMap<String, CachedSvg> new()
 
+    width, height: Int
+    overScaling := 1.0
 
-    // let's hope none of them will be larger than this
-    width  := 1024
-    height := 1024
-    overScaling := 2.0
+    image: ImageSurface
 
-    cache: ImageSurface
-
-    init: func (=pos, =path) {
+    init: func (=pos, scaling: Float, =width, =height, =path) {
         if(svgCache contains?(path)) {
-            svg = svgCache get(path)
+            cached := svgCache get(path)
+            svg   = cached svg
+            image = cached image
         } else {
             logger debug("Loading svg asset %s" format(path))
             svg = Svg new(path)
-            svgCache put(path, svg)
+            cache(scaling)
+            svgCache put(path, CachedSvg new(svg, image))
         }
-
-        cache = ImageSurface new(CairoFormat ARGB32, width, height)
-
-        // cache one first time
-        cache()
     }
     
-    cache: func {
-        cr := Context new(cache)
+    cache: func (scaling: Float) {
+        image = ImageSurface new(CairoFormat ARGB32, width * overScaling, height * overScaling)
+        cr := Context new(image)
         cr setSourceRGBA(0.0, 0.0, 0.0, 0.0)
+        cr scale(scaling, scaling)
         cr paint()
         cr scale(overScaling, overScaling)
         svg render(cr)
@@ -199,18 +209,17 @@ SvgSprite: class extends Sprite {
     }
 
     paint: func (cr: Context) {
-        // TODO: is that even necessary?
-        cr setAntialias(CairoAntialias SUBPIXEL)
         cr scale(1.0 / overScaling, 1.0 / overScaling)
-        cr setSourceSurface(cache, 0, 0)
+        cr setSourceSurface(image, 0, 0)
         cr rectangle(0.0, 0.0, width, height)
         cr clip()
         cr paintWithAlpha(alpha)
     }
 
     free: func {
-        // here we have resources to free
-        svg free()
+        // don't free anything, what if there's another
+        // reference from the cache?
+        // TODO: this leaks.
     }
 
 }
