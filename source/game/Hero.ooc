@@ -1,7 +1,7 @@
 use deadlogger
 
 // game deps
-import ui/[Sprite, MainUI]
+import ui/[Sprite, MainUI, Input]
 import Engine, Level, Collision
 
 import math/[Vec2, Vec3]
@@ -16,6 +16,7 @@ Hero: class extends Actor {
     reflectionSprite : Sprite
 
     ui: MainUI
+    input: Input
 
     groundHeight := 0.0
     touchesGround := false
@@ -34,6 +35,7 @@ Hero: class extends Actor {
 
     init: func (=level, =groundHeight) {
         ui = level engine ui
+        input = ui input
         body = Body new(level)
         
         bb = RectSprite new(body pos)
@@ -60,10 +62,10 @@ Hero: class extends Actor {
     update: func (delta: Float) {
         // logger info("Position = %s" format(body pos _)) 
 
-        if (ui isPressed(Keys LEFT)) {
+        if (input isPressed(Keys LEFT)) {
             body speed interpolateX!(-speed, speedAlpha)
             direction = -1.0
-        } else if (ui isPressed(Keys RIGHT)) {
+        } else if (input isPressed(Keys RIGHT)) {
             body speed interpolateX!(speed, speedAlpha)
             mainSprite scale = vec2(-scale, scale)
             direction = 1.0
@@ -71,7 +73,7 @@ Hero: class extends Actor {
             body speed interpolateX!(0, speedAlpha)
         }
 
-        if (touchesGround && ui isPressed(Keys SPACE)) {
+        if (touchesGround && input isPressed(Keys SPACE)) {
             body speed y = -jumpSpeed
         }
 

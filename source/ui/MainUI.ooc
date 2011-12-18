@@ -1,7 +1,14 @@
+
+/*
+ * Main UI. Mostly a gtk window creating a cairo
+ * context on each redraw, forcing a redraw every
+ * few milliseconds.
+ */
+
 use cairo, gtk, deadlogger
 
 // game deps
-import Sprite
+import Sprite, Input
 import game/[Level, Hero]
 import math/[Vec2, Vec3]
 
@@ -13,10 +20,9 @@ import gdk/[Event]
 import structs/[ArrayList]
 import zombieconfig
 
-Keys: enum from UInt {
-    LEFT  = 65361
-    RIGHT = 65363
-    SPACE = 32
+UIMode: enum {
+    GAME,
+    EDITOR
 }
 
 MainUI: class {
@@ -26,73 +32,36 @@ MainUI: class {
 
     width, height: Int
 
-    MAX_KEY := static 65536
-    keyState: Bool*
-
     logger := static Log getLogger(This name)
 
     level: Level // current level being drawn
+    input: Input
 
-    campos := vec2(0.0, 0.0)
-    mousepos := vec2(0.0, 0.0)
-    mouseworldpos := vec2(0.0, 0.0)
+    translation := vec2(0, 0)
+
+    mode := UIMode GAME
 
     init: func (config: ZombieConfig) {
-        keyState = gc_malloc(Bool size * MAX_KEY)
         win = Window new(config["title"])
 
-        width  = config["screenWidth"] toInt()
+        width  = config["screenWidth"]  toInt()
         height = config["screenHeight"] toInt()
         win setUSize(width as GInt, height as GInt)
+
         win setPosition(Window POS_CENTER)
 
-        win connect("delete-event", exit) // exit on window close
-
-        // redraw on each window move, possibly before!
+        // exit on window close
+        win connect("delete-event", exit) 
         win connect("expose-event", || draw())
 
-        win addEvents(GdkEventMask POINTER_MOTION_MASK)
-        win connectKeyEvent("key-press-event",     |ev| keyPressed (ev))
-        win connectKeyEvent("key-release-event",   |ev| keyReleased(ev))
-        win connectKeyEvent("motion-notify-event", |ev| mouseMoved(ev))
+        // init input system
+        input = Input new(this)
 
         win showAll()
     }
 
     run: func {
         Gtk main()
-    }
-
-    keyPressed: func (ev: EventKey*) {
-        if(debug) {
-            "Key pressed! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
-        }
-        if (ev@ keyval < MAX_KEY) {
-            keyState[ev@ keyval] = true
-        }
-    }
-
-    keyReleased: func (ev: EventKey*) {
-        if(debug) {
-            "Key released! it's state %d, key %u" printfln(ev@ state, ev@ keyval)
-        }
-        if (ev@ keyval < MAX_KEY) {
-            keyState[ev@ keyval] = false
-        }
-    }
-
-    mouseMoved: func (ev: EventMotion*) {
-        if(debug) {
-            "Motion at (%.2f, %.2f)" printfln(ev@ x, ev@ y)
-        }
-        (mousepos x, mousepos y) = (ev@ x, ev@ y)
-    }
-
-    isPressed: func (keyval: Int) -> Bool {
-        if (keyval >= MAX_KEY) {
-            return false
-        }
-        keyState[keyval]
     }
 
     redraw: func {
@@ -108,13 +77,7 @@ MainUI: class {
     }
 
     paint: func (cr: Context) {
-        camposTarget := level hero body pos sub(vec2(width / 2, height / 2))
-        campos interpolate!(camposTarget, 0.2)
-        cr translate (-campos x, -campos y)
-
-        mouseworldpos x = mousepos x + campos x
-        mouseworldpos y = mousepos y + campos y
-
+        cr translate(translation x, translation y)
         background(cr)
 
         // draw level

@@ -5,7 +5,7 @@ import zombieconfig
 import deadlogger/[Log, Handler, Formatter, Filter]
 
 // game deps
-import ui/MainUI
+import ui/[MainUI]
 import game/[Engine, Level, LevelLoader]
 
 main: func {
@@ -26,6 +26,7 @@ main: func {
     engine := Engine new(ui)
 
     loader := LevelLoader new(engine)
+
 
     level: Level
     level = loader load("assets/levels/level1.json")

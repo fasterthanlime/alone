@@ -30,6 +30,11 @@ Vec2: class {
         new(x * f, y * f)
     }
 
+    set!: func (v: Vec2) {
+        x = v x
+        y = v y
+    }
+
     sub: func (v: Vec2) -> This {
         new(x - v x, y - v y)
     }

@@ -1,7 +1,7 @@
 use deadlogger
 
 // game deps
-import Engine
+import Engine, Camera
 import ui/[Sprite, MainUI]
 import Hero, Baddie, Platform, Collision
     
@@ -30,6 +30,8 @@ Level: class {
     fgSprites := ArrayList<Sprite> new()
     debugSprites := ArrayList<Sprite> new()
 
+    camera: Camera
+
     currentPlatform: Platform
 
     hero: Hero
@@ -38,14 +40,17 @@ Level: class {
         hero = Hero new(this, engine ui height - 40)
         actors add(hero)
 
+        camera = Camera new(engine ui)
+        actors add(camera)
+
         currentPlatform = Platform new(this, vec2(0.0, 0.0), "metal")
         currentPlatform mainSprite alpha = 0.5
         actors add(currentPlatform)
     }
 
     update: func (delta: Float) {
-        currentPlatform pos x = engine ui mouseworldpos x
-        currentPlatform pos y = engine ui mouseworldpos y
+        currentPlatform pos x = camera mouseworldpos x
+        currentPlatform pos y = camera mouseworldpos y
 
         actors each(|actor|
             actor update(delta)
