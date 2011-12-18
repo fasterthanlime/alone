@@ -40,6 +40,7 @@ LevelLoader: class {
             match type {
                 case "background" =>
                     bg := PngSprite new(vec2(0, 0), object get("path", String))
+                    bg tiled = true
                     level bgSprites add(bg)
                 case "hero" =>
                     level hero body pos = readVec2(object, "pos")

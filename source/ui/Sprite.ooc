@@ -118,6 +118,7 @@ EllipseSprite: class extends Sprite {
 PngSprite: class extends Sprite {
 
     path: String
+    tiled := false
 
     image: ImageSurface
 
@@ -135,10 +136,26 @@ PngSprite: class extends Sprite {
     }
 
     paint: func (cr: Context) {
+        paintOnce(cr)
+        if (tiled) {
+            for (x in -3..3) {
+                for (y in -3..3) {
+                    cr save()
+                    cr translate (x * width, y * height)
+                    paintOnce(cr)
+                    cr restore()
+                }
+            }
+        }
+    }
+
+    paintOnce: func (cr: Context) {
+        cr save()
         cr setSourceSurface(image, 0, 0)
-        cr rectangle(0.0, 0.0, width, height)
+        cr rectangle(0, 0, width, height)
         cr clip()
         cr paint()
+        cr restore()
     }
 
 }
