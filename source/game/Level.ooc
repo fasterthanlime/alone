@@ -137,6 +137,19 @@ Box: class extends Collideable {
         miny2 := y2 - rect2 size y / 2
         maxy2 := y2 + rect2 size y / 2
 
+        if (y1 < y2 && maxy1 > miny2) {
+            if ((minx1 > minx2 && minx1 < maxx2) ||
+                (maxx1 > minx2 && maxx1 < maxx2) ||
+                (minx2 > minx1 && minx2 < maxx1) ||
+                (maxx2 > minx1 && maxx2 < maxx1)) {
+                b := Bang new()
+                b depth = maxy1 - miny2
+                (b dir x, b dir y) = (0, -1)
+                return b
+            }
+        }
+
+        /*
         if (x1 > x2 && minx1 < maxx2) {
             b := Bang new()
             return b
@@ -146,6 +159,7 @@ Box: class extends Collideable {
             b := Bang new()
             return b
         }
+        */
 
         // TODO: other cases, duh :)
 

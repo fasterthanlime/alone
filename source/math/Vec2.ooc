@@ -38,6 +38,25 @@ Vec2: class {
         new(x + v x, y + v y)
     }
 
+    add!: func (v: Vec2) {
+        x += v x
+        y += v y
+    }
+
+    perp: func -> Vec2 {
+        new(y, -x)
+    }
+   
+    project!: func (v: Vec2) {
+        v = v normalized()
+        d := dot(v)
+        (x, y) = (v x * d, v y * d)
+    }
+
+    dot: func (v: Vec2) -> Float {
+        x * v x + y * v y
+    }
+
     interpolate!: func (target: This, alpha: Float) {
         (x, y) = (x * (1 - alpha) + target x * alpha,
                   y * (1 - alpha) + target y * alpha)

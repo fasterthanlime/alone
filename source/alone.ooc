@@ -18,6 +18,7 @@ main: func {
     config := ZombieConfig new("alone.config", |base|
         base("screenWidth", "1024")
         base("screenHeight", "768")
+        base("startLevel", "level1")
     )
 
     // create main ui, initialize engine

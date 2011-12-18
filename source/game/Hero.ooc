@@ -26,6 +26,7 @@ Hero: class extends Actor {
 
     hb : RectSprite // hit box
     bb : RectSprite // bounding box
+    box: Box
 
     body: Body
     direction := 1.0 // 1 = right, -1 = left
@@ -51,6 +52,9 @@ Hero: class extends Actor {
         mainSprite offset x = - bb size x / 2
         mainSprite offset y = - bb size y / 2 - 20
         level sprites add(mainSprite)
+
+        box = Box new(bb)
+        level collideables add(box)
     }
 
     update: func (delta: Float) {
@@ -73,6 +77,16 @@ Hero: class extends Actor {
 
         body update(delta)
 
+        touchesGround = false
+        level collides?(box, |bang|
+            // we might need multi-constraint resolution
+            // later on
+            logger info ("Bang, dir %s, depth %.2f" format(bang dir _, bang depth))
+            body pos add!(bang dir mul(bang depth))
+            body speed project!(bang dir perp())
+            touchesGround = true
+        )
+
         minAlpha := 0.2
         alphaAlpha := 0.1
         mainSprite alpha = mainSprite alpha * (1 - alphaAlpha) +
@@ -82,6 +96,7 @@ Hero: class extends Actor {
         }
 
         // artificial ground collision
+        /*
         maxHeight := groundHeight - bb size y / 2
         if (body pos y > maxHeight) {
             if (body speed y > 0) {
@@ -92,10 +107,13 @@ Hero: class extends Actor {
         } else {
             touchesGround = false
         }
+        */
 
-        mainSprite pos = body pos
-        mainSprite       offset x = direction * bb size x / 2
-        mainSprite       scale x = - direction * scale
+        bb pos              = body pos
+        hb pos              = body pos
+        mainSprite pos      = body pos
+        mainSprite offset x = direction * bb size x / 2
+        mainSprite scale  x = - direction * scale
     }
 
 }
