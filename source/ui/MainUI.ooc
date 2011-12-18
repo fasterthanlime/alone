@@ -92,6 +92,42 @@ MainUI: class {
             logger error("No level set!")
         }
 
+        // now draw the UI
+        cr translate(-translation x, -translation y)
+        drawUI(cr)
+    }
+
+    drawUI: func (cr: Context) {
+        barHeight := 80
+        barAlpha := 0.8
+
+        cr setSourceRGBA(1, 1, 1, 0.7)
+
+        // top bar
+        cr rectangle(0, 0, width, barHeight)
+        cr fill()
+
+        // bottom bar
+        cr rectangle(0, height - barHeight, width, height)
+        cr fill()
+
+        // text !
+        cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+        cr setSourceRGB(0, 0, 0)
+
+        // level title
+        cr save()
+        cr moveTo(20, 40)
+        cr setFontSize(36.0)
+        cr showText(level name)
+        cr restore()
+
+        // level author
+        cr save()
+        cr moveTo(20, 65)
+        cr setFontSize(24.0)
+        cr showText(level author)
+        cr restore()
     }
 
     background: func (cr: Context) {
