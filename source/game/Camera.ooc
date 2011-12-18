@@ -35,9 +35,6 @@ Camera: class extends Actor {
     }
 
     update: func (delta: Float) {
-        // update pointer world position
-        mouseworldpos = toWorldPos(input mousepos)
-
         match (ui mode) {
             case UIMode GAME =>
                 // follow hero!
@@ -49,14 +46,17 @@ Camera: class extends Actor {
         translationTarget := pos sub(halfScreen) mul(-1)
 
         ui translation interpolate!(translationTarget, camAlpha)
+
+        // update pointer world position
+        mouseworldpos = toWorldPos(input mousepos)
     }
     
     toWorldPos: func (v: Vec2) -> Vec2 {
-        v sub(halfScreen) add(pos)
+        v sub(ui translation)
     }
 
     toScreenPos: func (v: Vec2) -> Vec2 {
-        v add(halfScreen) sub(pos)
+        v add(ui translation)
     }
 
 }
