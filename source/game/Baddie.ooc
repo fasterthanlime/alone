@@ -49,7 +49,7 @@ Baddie: class extends Actor {
 
         mainSprite = SvgSprite new(body pos, 0.2, 100, 100, "assets/svg/baddies/Baddie1_Full.svg")
         mainSprite offset = vec2(-40, -40)
-        level sprites add(mainSprite)
+        level fgSprites add(mainSprite)
 
         box = Box new(bb)
         level collideables add(box)

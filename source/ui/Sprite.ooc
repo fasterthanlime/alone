@@ -115,6 +115,25 @@ EllipseSprite: class extends Sprite {
 
 }
 
+/**
+ * A label that displays text
+ */
+LabelSprite: class extends Sprite {
+
+    text: String
+    fontSize := 12.0
+
+    init: func (=text) {
+
+    }
+
+    paint: func (cr: Context) {
+        cr setFontSize(12.0)
+        cr showText(text)
+    }
+
+}
+
 PngSprite: class extends Sprite {
 
     path: String
