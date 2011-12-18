@@ -17,7 +17,7 @@ Baddie: class extends Actor {
 
     hero: Hero
 
-    mainSprite: EllipseSprite
+    mainSprite: Sprite
     bb: RectSprite // bounding box
     box: Box
 
@@ -32,8 +32,6 @@ Baddie: class extends Actor {
     collideCounter := 0
     collideDuration := 15
 
-    scale := 0.25
-
     state := BaddieState CMON
 
     init: func (=level) {
@@ -45,15 +43,13 @@ Baddie: class extends Actor {
 
         bb = RectSprite new(body pos)
         bb filled = false
-        bb size = vec2(10, 10)
+        bb size = vec2(40, 40)
         bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
-        level sprites add(bb)
+        // level sprites add(bb)
 
-        mainSprite = EllipseSprite new(body pos)
-        mainSprite size = vec2(15, 15)
-        mainSprite color = vec3(0.4, 0.4, Random randInt(0, 255) / 255.0)
-        mainSprite alpha = 0.4
-        level sprites add(bb)
+        mainSprite = SvgSprite new(body pos, "assets/svg/baddies/Baddie1_Full.svg")
+        mainSprite scale = vec2(0.2, 0.2)
+        mainSprite offset = vec2(-40, -40)
         level sprites add(mainSprite)
 
         box = Box new(bb)
@@ -77,6 +73,9 @@ Baddie: class extends Actor {
 
         if (hero body speed norm() > 3.0) {
             state = BaddieState CMON 
+            level collides?(box, |bang|
+                state = BaddieState WTF
+            )
         } else if (diff norm() < 300.0) {
             state = BaddieState GTFO
         } else {

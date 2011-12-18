@@ -10,7 +10,7 @@
         {
             "type": "swarm",
             "pos": [ 40.0, 40.0 ],
-            "population": 30
+            "population": 8
         },
 
         {
@@ -22,7 +22,6 @@
             "type": "platform",
             "kind": "metal",
             "pos" : [ 200.0, 500.0 ],
-            "size": [ 100.0, 40.0 ]
         }
     ]
 }
