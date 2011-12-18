@@ -4,7 +4,7 @@ use deadlogger
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
-import Hero, Baddie
+import Hero, Baddie, Platform
     
 import math/[Vec2, Vec3, Random]
 
@@ -50,6 +50,10 @@ LevelLoader: class {
                         baddie := Baddie new(level)
                         level actors add(baddie)
                     )
+                case "platform" =>
+                    pos := readVec2(object, "pos")
+                    kind := object get("kind", String)
+                    platform := Platform new(level, pos, kind)
             }
         }
 

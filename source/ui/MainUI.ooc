@@ -35,6 +35,8 @@ MainUI: class {
     scale := 1.0
     campos := vec2(0.0, 0.0)
 
+    mousepos := vec2(0.0, 0.0)
+
     init: func (config: ZombieConfig) {
         keyState = gc_malloc(Bool size * MAX_KEY)
         win = Window new(config["title"])
@@ -48,8 +50,11 @@ MainUI: class {
 
         // redraw on each window move, possibly before!
         win connect("expose-event", || draw())
-        win connectKeyEvent("key-press-event",   |ev| keyPressed (ev))
-        win connectKeyEvent("key-release-event", |ev| keyReleased(ev))
+
+        win addEvents(GdkEventMask POINTER_MOTION_MASK)
+        win connectKeyEvent("key-press-event",     |ev| keyPressed (ev))
+        win connectKeyEvent("key-release-event",   |ev| keyReleased(ev))
+        win connectKeyEvent("motion-notify-event", |ev| mouseMoved(ev))
 
         win showAll()
     }
@@ -76,6 +81,11 @@ MainUI: class {
         }
     }
 
+    mouseMoved: func (ev: EventMotion*) {
+        "Motion at (%.2f, %.2f)" printfln(ev@ x, ev@ y)
+        (mousepos x, mousepos y) = (ev@ x, ev@ y)
+    }
+
     isPressed: func (keyval: Int) -> Bool {
         if (keyval >= MAX_KEY) {
             return false
@@ -100,6 +110,7 @@ MainUI: class {
         campos interpolate!(camposTarget, 0.2)
         cr translate (-campos x, -campos y)
 
+        /*
         cr translate (  width / 2,   height / 2)
         cr scale(scale, scale)
         alphaScale := 0.05
@@ -113,6 +124,7 @@ MainUI: class {
             }
         }
         cr translate (- width / 2, - height / 2)
+        */
 
         background(cr)
 

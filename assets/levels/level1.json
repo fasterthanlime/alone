@@ -8,20 +8,50 @@
         },
 
         {
-            "type": "swarm",
-            "pos": [ 40.0, 40.0 ],
-            "population": 8
+            "type": "hero",
+            "pos": [ 200.0, 10.0 ]
         },
 
         {
-            "type": "hero",
-            "pos": [ 200.0, 200.0 ]
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 50.0, 500.0 ],
         },
 
         {
             "type": "platform",
             "kind": "metal",
             "pos" : [ 200.0, 500.0 ],
+        },
+
+        {
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 350.0, 500.0 ],
+        },
+
+        {
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 50.0, 800.0 ],
+        },
+
+        {
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 200.0, 800.0 ],
+        },
+
+        {
+            "type": "platform",
+            "kind": "metal",
+            "pos" : [ 350.0, 800.0 ],
+        },
+
+        {
+            "type": "swarm",
+            "pos": [ 40.0, 40.0 ],
+            "population": 8
         }
     ]
 }
