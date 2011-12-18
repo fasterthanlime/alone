@@ -7,6 +7,7 @@ import math/[Vec2, Vec3]
 import deadlogger/Log
 import cairo/Cairo
 import rsvg
+import structs/HashMap
 
 Sprite: class {
 
@@ -147,7 +148,9 @@ PngSprite: class extends Sprite {
 SvgSprite: class extends Sprite {
 
     path: String
-    svg: Svg // TODO: don't load the same svg 239487 times, have a cache
+    svg: Svg
+    svgCache := static HashMap<String, Svg> new()
+
 
     // let's hope none of them will be larger than this
     width  := 1024
@@ -157,9 +160,14 @@ SvgSprite: class extends Sprite {
     cache: ImageSurface
 
     init: func (=pos, =path) {
-        logger debug("Loading svg asset %s" format(path))
+        if(svgCache contains?(path)) {
+            svg = svgCache get(path)
+        } else {
+            logger debug("Loading svg asset %s" format(path))
+            svg = Svg new(path)
+            svgCache put(path, svg)
+        }
 
-        svg = Svg new(path)
         cache = ImageSurface new(CairoFormat ARGB32, width, height)
 
         // cache one first time
