@@ -30,35 +30,40 @@ Vec2: class {
         new(x * f, y * f)
     }
 
-    set!: func (v: Vec2) {
+    set!: func (v: This) {
         x = v x
         y = v y
     }
 
-    sub: func (v: Vec2) -> This {
+    set!: func ~twofloats (px, py: Float) {
+        x = px
+        y = py
+    }
+
+    sub: func (v: This) -> This {
         new(x - v x, y - v y)
     }
 
-    add: func (v: Vec2) -> This {
+    add: func (v: This) -> This {
         new(x + v x, y + v y)
     }
 
-    add!: func (v: Vec2) {
+    add!: func (v: This) {
         x += v x
         y += v y
     }
 
-    perp: func -> Vec2 {
+    perp: func -> This {
         new(y, -x)
     }
    
-    project!: func (v: Vec2) {
+    project!: func (v: This) {
         v = v normalized()
         d := dot(v)
         (x, y) = (v x * d, v y * d)
     }
 
-    dot: func (v: Vec2) -> Float {
+    dot: func (v: This) -> Float {
         x * v x + y * v y
     }
 
@@ -84,4 +89,6 @@ Vec2: class {
 
 // cuz I'm lazy
 vec2: func (x, y: Float) -> Vec2 { Vec2 new(x, y) }
+vec2: func ~square (xy: Float) -> Vec2 { Vec2 new(xy, xy) }
+vec: func ~two (x, y: Float) -> Vec2 { Vec2 new(x, y) }
 

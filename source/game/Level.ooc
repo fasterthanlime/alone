@@ -1,7 +1,7 @@
 use deadlogger
 
 // game deps
-import Engine, Camera
+import Engine, Camera, Editor
 import ui/[Sprite, MainUI]
 import Hero, Baddie, Platform, Collision
     
@@ -32,7 +32,7 @@ Level: class {
 
     camera: Camera
 
-    currentPlatform: Platform
+    editor: Editor
 
     hero: Hero
 
@@ -41,20 +41,21 @@ Level: class {
         actors add(hero)
 
         camera = Camera new(engine ui)
-        actors add(camera)
-
-        currentPlatform = Platform new(this, vec2(0.0, 0.0), "metal")
-        currentPlatform mainSprite alpha = 0.5
-        actors add(currentPlatform)
+        editor = Editor new(engine ui, this)
     }
 
     update: func (delta: Float) {
-        currentPlatform pos x = camera mouseworldpos x
-        currentPlatform pos y = camera mouseworldpos y
+        if (engine ui mode == UIMode GAME) {
+            actors each(|actor|
+                actor update(delta)
+            )
+        }
+        
+        // update those separately, in case
+        // we want to clear actors
+        camera update(delta)
+        editor update(delta)
 
-        actors each(|actor|
-            actor update(delta)
-        )
         engine ui redraw()
     }
 

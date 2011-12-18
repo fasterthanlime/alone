@@ -98,7 +98,7 @@ MainUI: class {
     }
 
     drawUI: func (cr: Context) {
-        barHeight := 80
+        barHeight := 40
         barAlpha := 0.8
 
         cr setSourceRGBA(1, 1, 1, 0.7)
@@ -114,20 +114,21 @@ MainUI: class {
         // text !
         cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
         cr setSourceRGB(0, 0, 0)
+        cr setFontSize(26.0)
 
         // level title
-        cr save()
-        cr moveTo(20, 40)
-        cr setFontSize(36.0)
-        cr showText(level name)
-        cr restore()
+        cr moveTo(20, 30)
+        cr showText("Level: " + level name)
 
-        // level author
-        cr save()
-        cr moveTo(20, 65)
-        cr setFontSize(24.0)
-        cr showText(level author)
-        cr restore()
+        // mode
+        cr moveTo(20, height - barHeight + 30)
+        cr showText("Mode: %s" format(match mode {
+            case UIMode GAME   => "game"    
+            case UIMode EDITOR => "editor"    
+        }))
+
+        // draw editor UI, if any
+        level editor paint(cr)
     }
 
     background: func (cr: Context) {

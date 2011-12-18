@@ -24,7 +24,6 @@ Camera: class extends Actor {
     logger := static Log getLogger(This name)
 
     pos := vec2(0, 0)
-    camAlpha := 0.2
 
     mouseworldpos := vec2(0, 0)
     halfScreen := vec2(0, 0)
@@ -45,7 +44,8 @@ Camera: class extends Actor {
 
         translationTarget := pos sub(halfScreen) mul(-1)
 
-        ui translation interpolate!(translationTarget, camAlpha)
+        ui translation interpolate!(translationTarget,
+            ui mode == UIMode GAME ? 0.2 : 0.8)
 
         // update pointer world position
         mouseworldpos = toWorldPos(input mousepos)
