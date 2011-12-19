@@ -238,7 +238,8 @@ DecorDroppable: class extends Droppable {
 
     drop: func {
         droppedDecor := Decor new(mode level, decor path, decor pos clone(), decor scale)
-        mode level decors add(decor)
+        droppedDecor update(1.0)
+        mode level decors add(droppedDecor)
     }
 
     getName: func -> String { "decor" }

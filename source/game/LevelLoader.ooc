@@ -77,6 +77,7 @@ LevelLoader: class {
                     pos := readVec2(object, "pos")
                     scale := readFloat(object, "scale")
                     decor := Decor new(level, path, pos, scale)
+                    decor update(1.0)
                     level decors add(decor)
             }
         }
