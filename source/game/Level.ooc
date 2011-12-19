@@ -25,6 +25,11 @@ Level: class {
 
     name := "<untitled>"
     author := "<unknown>"
+
+    welcomeMessage := "Good luck soldier!"
+    endMessage := "You did it!"
+    nextLevel := "<win>"
+
     backgroundPath := ""
 
     startPos := vec2(0)
@@ -44,6 +49,7 @@ Level: class {
     hero: Hero
 
     haveWon := false
+    wonCounter := 0
 
     endSprite: ImageSprite
 
@@ -103,7 +109,7 @@ Level: class {
         )
 
         // display friendly message
-        engine ui notify("Good luck, soldier!")    
+        engine ui notify(welcomeMessage)    
     }
 
     update: func (delta: Float) {
@@ -122,7 +128,17 @@ Level: class {
 
         engine ui redraw()
 
-        if (!haveWon) {
+        if (haveWon) {
+            if (wonCounter > 0) {
+                wonCounter -= 1
+            } else {
+                if (nextLevel == "<win>") {
+                    engine ui mode = UIMode ULTIMATE_WIN
+                } else {
+                    engine load(nextLevel)
+                }
+            }
+        } else {
             if (hero life <= 0) {
                 engine ui mode = UIMode GAME_OVER
             }
@@ -137,11 +153,12 @@ Level: class {
                     // reset() can repair. Abandon all hope of doing anything
                     // useful with hero beyond this point. Just load another
                     // level. Just do it.
+                    wonCounter = 120
                     haveWon = true
                     hero body pos set!(endPos)
                     hero body speed set!(0, 0)
                     hero state = HeroState MR_FAHRENHEIT
-                    engine ui notify("YOU DID IT!")
+                    engine ui notify(endMessage)
                 }
             }
         }

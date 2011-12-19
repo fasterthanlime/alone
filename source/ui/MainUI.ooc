@@ -21,10 +21,11 @@ import structs/[ArrayList]
 import zombieconfig
 
 UIMode: enum {
-    MENU,
-    GAME,
-    GAME_OVER,
+    MENU
+    GAME
+    GAME_OVER
     EDITOR
+    ULTIMATE_WIN
 }
 
 MainUI: class {
@@ -40,8 +41,6 @@ MainUI: class {
     input: Input
 
     translation := vec2(0, 0)
-
-    gameoverUI: GroupSprite
 
     mode := UIMode GAME
 
@@ -80,6 +79,9 @@ MainUI: class {
             }
         )
     }
+
+    gameoverUI: GroupSprite
+    gamewinUI: GroupSprite
 
     hud: GroupSprite
     healthPercentageSprite: LabelSprite
@@ -166,6 +168,24 @@ MainUI: class {
         gameoverText centered = true
         gameoverText fontSize = 80.0
         gameoverUI add(gameoverText)
+
+        // create game won screen
+        gamewinUI = GroupSprite new()
+
+        gamewinBg := RectSprite new(vec2(width / 2, height / 2))
+        gamewinBg size set!(width, height)
+        gamewinBg color = vec3(1.0, 0.7, 0.7)
+        gamewinUI add(gamewinBg)
+
+        nyan := ImageSprite new(vec2(width / 2, 400), "assets/png/nyan.png")
+        nyan offset set!(- nyan width / 2, - nyan height / 2) 
+        gamewinUI add(nyan)
+
+        gamewinText := LabelSprite new(vec2(width / 2, height - 200), "YOU WON THE INTERNET.")
+        gamewinText color = vec3(1.0, 1.0, 1.0)
+        gamewinText centered = true
+        gamewinText fontSize = 80.0
+        gamewinUI add(gamewinText)
     }
     
     notify: func (msg: String, duration := 100) {
@@ -219,6 +239,8 @@ MainUI: class {
             drawUI(cr)
         } else if (mode == UIMode GAME_OVER) {
             gameoverUI draw(cr)
+        } else if (mode == UIMode ULTIMATE_WIN) {
+            gamewinUI draw(cr)
         }
     }
 
