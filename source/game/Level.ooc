@@ -131,7 +131,8 @@ Level: class {
         if (haveWon) {
             if (wonCounter > 0) {
                 wonCounter -= 1
-            } else {
+            } else if(wonCounter == 0) {
+                wonCounter = -1
                 if (nextLevel == "<win>") {
                     engine ui mode = UIMode ULTIMATE_WIN
                 } else {

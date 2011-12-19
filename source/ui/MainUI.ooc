@@ -76,14 +76,17 @@ MainUI: class {
                 case UIMode GAME   =>
                     level editor setEnabled(true)
                     UIMode EDITOR
+                case => this mode
             }
         )
 
         input onKeyPress(Keys ENTER, ||
+            logger info("Got enter press, mode = %d, win = %d" format(this mode, UIMode ULTIMATE_WIN))
             this mode = match (this mode) {
-                case UIMode MENU => UIMode GAME
-                case UIMode GAME_OVER => UIMode MENU
+                case UIMode MENU         => UIMode GAME
+                case UIMode GAME_OVER    => UIMode MENU
                 case UIMode ULTIMATE_WIN => UIMode MENU
+                case => this mode
             }
         )
     }
