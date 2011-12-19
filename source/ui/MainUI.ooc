@@ -144,13 +144,13 @@ MainUI: class {
         notifBg := RectSprite new(vec2(width / 2, 200))
         notifBg color = vec3(0.0, 0.0, 0.0)
         notifBg alpha = 0.5
-        notifBg size set!(500, 200)
+        notifBg size set!(width - 40, 200)
         notifScreen add(notifBg)
 
         notifTextSprite = LabelSprite new(vec2(width / 2, 200), "Notification!")
         notifTextSprite color = vec3(1.0, 1.0, 1.0)
         notifTextSprite centered = true
-        notifTextSprite fontSize = 40.0
+        notifTextSprite fontSize = 30.0
         notifScreen add(notifTextSprite)
 
         // create game over screen

@@ -426,6 +426,7 @@ EndPoint: class extends Droppable {
     drop: func {
         label pos set!(pointer pos)
         mode level endPos set!(pointer pos)
+        mode level endSprite pos = mode level endPos
     }
 
     globalEnter: func {

@@ -43,7 +43,13 @@ Level: class {
     editor: Editor
     hero: Hero
 
+    endSprite: ImageSprite
+
     init: func (=engine, levelName: String) {
+        endSprite = ImageSprite new(endPos, "assets/svg/fusee.svg")
+        endSprite offset set!(- endSprite width / 2, - endSprite height / 2)
+        sprites add(endSprite)
+
         hero = Hero new(this)
         actors add(hero)
 
@@ -69,6 +75,9 @@ Level: class {
         hero body pos set!(startPos)
         hero body speed set!(0, 0)
         hero life = 100
+
+        // set end position to end position
+        endSprite pos = endPos
     
         // re-spawn baddies
         swarms each(|swarm|
@@ -111,6 +120,13 @@ Level: class {
 
         if (hero life <= 0) {
             engine ui mode = UIMode GAME_OVER
+        }
+
+        endDist := hero body pos dist(endPos)
+        if (endDist < 150.0) {
+            if (hitsNumber < totalHitsNumber) {
+                engine ui notify("Uh oh. The planet still wants to be fed %d baddies." format(totalHitsNumber - hitsNumber), 10)
+            }
         }
     }
 
