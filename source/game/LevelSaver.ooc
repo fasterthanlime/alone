@@ -27,6 +27,9 @@ LevelSaver: class {
             make object(
                 "name", level name,
                 "author", level author,
+                "welcomeMessage", level welcomeMessage,
+                "endMessage", level endMessage,
+                "nextLevel", level nextLevel,
                 "totalHits", level totalHitsNumber,
                 "endPos", toArray(level endPos),
                 "objects", objects(make, level)

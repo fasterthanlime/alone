@@ -148,6 +148,27 @@ IdleMode: class extends EditMode {
             )
         )
 
+        input onKeyPress(Keys F5, ||
+            // F5 = change welcome message
+            textInput(editor, "Welcome message", editor level welcomeMessage, |response|
+                editor level welcomeMessage = response
+            )
+        )
+
+        input onKeyPress(Keys F6, ||
+            // F6 = change welcome message
+            textInput(editor, "Win message", editor level endMessage, |response|
+                editor level endMessage = response
+            )
+        )
+
+        input onKeyPress(Keys F7, ||
+            // F7 = change next level
+            textInput(editor, "Next level (<win> for last level)", editor level nextLevel, |response|
+                editor level nextLevel = response
+            )
+        )
+
         input onKeyPress(Keys E, ||
             editor change(editor DROP)
         )

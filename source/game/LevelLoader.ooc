@@ -30,6 +30,19 @@ LevelLoader: class {
         level := Level new(engine, levelName)
         level name   = json get("name",   String)
         level author = json get("author", String)
+
+        if(json contains?("welcomeMessage")) {
+            level welcomeMessage = json get("welcomeMessage", String)
+        }
+
+        if(json contains?("endMessage")) {
+            level endMessage = json get("endMessage", String)
+        }
+
+        if(json contains?("nextLevel")) {
+            level nextLevel = json get("nextLevel", String)
+        }
+
         if(json contains?("totalHits")) {
             level totalHitsNumber = json get("totalHits", Int)
         }
