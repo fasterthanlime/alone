@@ -134,7 +134,7 @@ Baddie: class extends Actor {
 
         if (!changed) {
             mainSprite alpha = 1.0
-            if (hero body speed norm() > 2.0) {
+            if (hero body speed norm() > 2.0 && diff norm() > 30.0) {
                 state = BaddieState CMON 
                 level collides?(box, |bang|
                     state = BaddieState WTF
@@ -150,7 +150,7 @@ Baddie: class extends Actor {
                 }
             } else {
                 state = BaddieState WTF
-                gtfoCounter = 120
+                gtfoCounter = 160
             }
         }
 
