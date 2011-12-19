@@ -39,7 +39,8 @@ LevelLoader: class {
 
             match type {
                 case "background" =>
-                    bg := PngSprite new(vec2(0, 0), object get("path", String))
+                    path := object get("path", String)
+                    bg := ImageSprite new(vec2(0), path)
                     bg tiled = true
                     level bgSprites add(bg)
                 case "hero" =>

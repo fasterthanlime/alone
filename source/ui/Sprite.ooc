@@ -149,16 +149,58 @@ LabelSprite: class extends Sprite {
 
 }
 
-PngSprite: class extends Sprite {
+ImageSprite: class extends Sprite {
 
-    path: String
     tiled := false
-
-    image: ImageSurface
-    imageCache := static HashMap<String, ImageSurface> new()
 
     width  := -1
     height := -1
+
+    path: String
+
+    init: func ~ohshutuprock {}
+
+    new: static func (pos: Vec2, path: String) -> This {
+        low := path toLower()
+        if (low endsWith?(".png")) {
+            PngSprite new(pos, path)
+        } else if (low endsWith?(".svg")) {
+            SvgSprite new(pos, 1.0, path)
+        } else {
+            Exception new("Unknown image type (neither PNG nor SVG): %s" format(path)) throw()
+            null
+        }
+    }
+
+    paint: func (cr: Context) {
+        if (tiled) {
+            for (x in -3..3) {
+                for (y in -3..3) {
+                    cr save()
+                    cr translate (x * width, y * height)
+                    paintOnce(cr)
+                    cr restore()
+                }
+            }
+        } else {
+            cr save()
+            paintOnce(cr)
+            cr restore()
+        }
+    }
+
+    paintOnce: func (cr: Context) {
+        cr setSourceRGB(1.0, 0.0, 0.0)
+        cr setFontSize(80)
+        cr showText("MISSING IMAGE %s" format(path))
+    }
+
+}
+
+PngSprite: class extends ImageSprite {
+
+    image: ImageSurface
+    imageCache := static HashMap<String, ImageSurface> new()
 
     init: func (=pos, =path) {
         if(imageCache contains?(path)) {
@@ -173,27 +215,15 @@ PngSprite: class extends Sprite {
         height = image getHeight()
     }
 
-    paint: func (cr: Context) {
-        paintOnce(cr)
-        if (tiled) {
-            for (x in -3..3) {
-                for (y in -3..3) {
-                    cr save()
-                    cr translate (x * width, y * height)
-                    paintOnce(cr)
-                    cr restore()
-                }
-            }
-        }
-    }
-
     paintOnce: func (cr: Context) {
-        cr save()
         cr setSourceSurface(image, 0, 0)
         cr rectangle(0, 0, width, height)
         cr clip()
-        cr paintWithAlpha(alpha)
-        cr restore()
+        if (alpha == 1.0) {
+            cr paint()
+        } else {
+            cr paintWithAlpha(alpha)
+        }
     }
 
 }
@@ -203,51 +233,58 @@ CachedSvg: class {
     svg: Svg
     image: ImageSurface
 
-    init: func (=svg, =image)
+    imgWidth, imgHeight: Int
+    width, height: Int
+
+    init: func (=svg) {
+        width  = svg getWidth()
+        height = svg getHeight()
+    }
 
 }
 
-SvgSprite: class extends Sprite {
+SvgSprite: class extends ImageSprite {
 
-    path: String
     svg: Svg
     svgCache := static HashMap<String, CachedSvg> new()
 
-    width, height: Int
-    overScaling := 1.0
+    cached: CachedSvg
+    scaling: Float
 
-    image: ImageSurface
-
-    init: func (=pos, scaling: Float, =width, =height, =path) {
+    init: func (=pos, =scaling, =path) {
         if(svgCache contains?(path)) {
-            cached := svgCache get(path)
-            svg   = cached svg
-            image = cached image
+            cached = svgCache get(path)
         } else {
-            logger debug("Loading svg asset %s" format(path))
             svg = Svg new(path)
+            cached = CachedSvg new(svg)
             cache(scaling)
-            svgCache put(path, CachedSvg new(svg, image))
+            logger debug("Loaded svg asset %s (size %dx%d)" format(path, cached width, cached height))
+
+            svgCache put(path, cached)
         }
+
+        width  = cached width
+        height = cached height
     }
     
     cache: func (scaling: Float) {
-        image = ImageSurface new(CairoFormat ARGB32, width * overScaling, height * overScaling)
-        cr := Context new(image)
-        cr setSourceRGBA(0.0, 0.0, 0.0, 0.0)
+        cached image = ImageSurface new(CairoFormat ARGB32, cached width * scaling, cached height * scaling)
+        cr := Context new(cached image)
         cr scale(scaling, scaling)
-        cr paint()
-        cr scale(overScaling, overScaling)
         svg render(cr)
         cr destroy()
     }
 
-    paint: func (cr: Context) {
-        cr scale(1.0 / overScaling, 1.0 / overScaling)
-        cr setSourceSurface(image, 0, 0)
-        cr rectangle(0.0, 0.0, width, height)
+    paintOnce: func (cr: Context) {
+        cr setSourceSurface(cached image, 0, 0)
+        cr rectangle(0.0, 0.0, width * scaling, height * scaling)
         cr clip()
-        cr paintWithAlpha(alpha)
+
+        if (alpha == 1.0) {
+            cr paint()
+        } else {
+            cr paintWithAlpha(alpha)
+        }
     }
 
     free: func {
