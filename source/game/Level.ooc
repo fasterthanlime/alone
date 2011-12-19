@@ -43,7 +43,15 @@ Level: class {
     editor: Editor
     hero: Hero
 
+    haveWon := false
+
+    endSprite: ImageSprite
+
     init: func (=engine, levelName: String) {
+        endSprite = ImageSprite new(endPos clone(), "assets/svg/fusee.svg")
+        endSprite offset set!(- endSprite width / 2, - endSprite height / 2)
+        sprites add(endSprite)
+
         hero = Hero new(this)
         actors add(hero)
 
@@ -53,6 +61,7 @@ Level: class {
 
     reset: func {
         // reset score
+        haveWon = false
         hitsNumber = 0
 
         // clear temp actors
@@ -69,6 +78,10 @@ Level: class {
         hero body pos set!(startPos)
         hero body speed set!(0, 0)
         hero life = 100
+        hero state = HeroState NORMAL
+
+        // set end position to end position
+        endSprite pos set!(endPos)
     
         // re-spawn baddies
         swarms each(|swarm|
@@ -88,6 +101,9 @@ Level: class {
                 actors add(baddie)
             )
         )
+
+        // display friendly message
+        engine ui notify("Good luck, soldier!")    
     }
 
     update: func (delta: Float) {
@@ -106,8 +122,28 @@ Level: class {
 
         engine ui redraw()
 
-        if (hero life <= 0) {
-            engine ui mode = UIMode GAME_OVER
+        if (!haveWon) {
+            if (hero life <= 0) {
+                engine ui mode = UIMode GAME_OVER
+            }
+
+            endDist := hero body pos dist(endPos)
+            if (endDist < 120.0) {
+                if (hitsNumber < totalHitsNumber) {
+                    engine ui notify("Uh oh. The planet still wants to be fed %d baddies." format(totalHitsNumber - hitsNumber), 10)
+                } else {
+                    // Okay, so from that point on you can pretty much assume
+                    // that we're going to wreck the level in ways that only
+                    // reset() can repair. Abandon all hope of doing anything
+                    // useful with hero beyond this point. Just load another
+                    // level. Just do it.
+                    haveWon = true
+                    hero body pos set!(endPos)
+                    hero body speed set!(0, 0)
+                    hero state = HeroState MR_FAHRENHEIT
+                    engine ui notify("YOU DID IT!")
+                }
+            }
         }
     }
 

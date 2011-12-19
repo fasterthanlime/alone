@@ -37,7 +37,10 @@ Camera: class extends Actor {
         match (ui mode) {
             case UIMode GAME =>
                 // follow hero!
-                pos set!(ui level hero body pos)
+                hero := ui level hero
+                if(hero state == HeroState NORMAL) {
+                    pos set!(ui level hero body pos)
+                }
             case UIMode EDITOR =>
                 // stand still
         }

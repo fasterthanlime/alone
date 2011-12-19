@@ -28,6 +28,10 @@ Vec2: class {
         mul(1.0 / n)
     }
 
+    dist: func (v: This) -> Float {
+        v sub(this) norm()
+    }
+
     angle: func -> Double {
         atan2(y, x)
     }
