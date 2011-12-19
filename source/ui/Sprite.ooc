@@ -102,11 +102,11 @@ RectSprite: class extends Sprite {
  */
 EllipseSprite: class extends Sprite {
 
-    init: super func
-
     radius := 15.0
     filled := true
     thickness := 3.0
+
+    init: func (=pos) {}
 
     paint: func (cr: Context) {
         // full circle!

@@ -59,7 +59,7 @@ Editor: class extends Actor {
         )
 
         input onKeyPress(Keys BACKSPACE, ||
-            if (ui mode != UIMode EDITOR) return
+            // works in both mode for debug
 
             level reset()
         )

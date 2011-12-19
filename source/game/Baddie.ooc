@@ -41,16 +41,12 @@ Baddie: class extends Actor {
         body = Body new(level)
         body gravity = 0.0
 
-        // bb = RectSprite new(body pos)
-        // bb filled = false
-        // bb size = vec2(40, 40)
-        // bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
-        // level sprites add(bb)
-
-        mainSprite = SvgSprite new(body pos, 0.2, 100, 100, "assets/svg/baddies/Baddie1_Full.svg")
+        mainSprite = SvgSprite new(body pos, 0.05, 100, 100, "assets/svg/baddies/baddie2_Full.svg")
         mainSprite offset = vec2(-40, -40)
         level fgSprites add(mainSprite)
 
+        bb = RectSprite new(body pos)
+        bb size = vec2(40, 40)
         box = Box new(bb)
         level collideables add(box)
     }
@@ -92,6 +88,14 @@ Baddie: class extends Actor {
         }
 
         body speed interpolate!(motion normalized() mul(speed), alpha)
+        if (body speed x > 3.0) {
+            mainSprite scale x = 1
+            mainSprite offset x = 0
+        } else if(body speed x < -3.0) {
+            mainSprite scale x = -1
+            mainSprite offset x = 50
+        }
+
         body update(delta)
     }
 

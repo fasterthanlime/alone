@@ -65,6 +65,8 @@ Level: class {
             swarm population times(||
                 baddie := Baddie new(this)
 
+                logger info("Spawning baddie at " + swarm center _)
+
                 // TODO: place in area
                 baddie body pos set!(swarm center)
                 actors add(baddie)

@@ -51,6 +51,7 @@ LevelLoader: class {
                     swarm center = readVec2(object, "center")
                     swarm radius = readFloat(object, "radius")
                     logger info("Got " + swarm _)
+                    level swarms add(swarm)
                 case "platform" =>
                     pos := readVec2(object, "pos")
                     kind := object get("kind", String)
