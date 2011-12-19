@@ -98,37 +98,41 @@ MainUI: class {
 
         topBar := RectSprite new(vec2(width / 2, barHeight / 2))
         topBar size set!(width, barHeight)
-        topBar color = vec3(1.0, 1.0, 1.0)
+        topBar color = vec3(0.0, 0.0, 0.0)
         topBar alpha = barAlpha
         hud add(topBar)
 
         bottomBar := RectSprite new(vec2(width / 2, height - barHeight / 2))
         bottomBar size set!(width, barHeight)
-        bottomBar color = vec3(1.0, 1.0, 1.0)
+        bottomBar color = vec3(0.0, 0.0, 0.0)
         bottomBar alpha = barAlpha
         hud add(bottomBar)
 
+        credits := LabelSprite new(vec2(width / 2, height - 20), "Made for Ludum Dare #22 by Amos Wenger, Einat Schlagmann, and Sylvain Wenger")
+        credits centered = true
+        credits color = vec3(1.0, 0.7, 0.7)
+
+        hud add(credits)
         healthSprite := ImageSprite new(vec2(10, 10), "assets/svg/health.svg")
         hud add(healthSprite)
 
         healthPercentageSprite = LabelSprite new(vec2(70, 20), "100%")
-        healthPercentageSprite color = vec3(0.0, 0.0, 0.0)
+        healthPercentageSprite color = vec3(1.0, 1.0, 1.0)
         healthPercentageSprite centered = true
         hud add(healthPercentageSprite)
 
         hitsSprite := ImageSprite new(vec2(width - 120, 10), "assets/svg/score.svg")
-        hitsSprite color = vec3(0.0, 0.0, 0.0)
         healthPercentageSprite centered = true
         hud add(hitsSprite)
 
         hitsNumberSprite = LabelSprite new(vec2(width - 60, 20), "0/10")
-        hitsNumberSprite color = vec3(0.0, 0.0, 0.0)
+        hitsNumberSprite color = vec3(1.0, 1.0, 1.0)
         hitsNumberSprite centered = true
         hud add(hitsNumberSprite)
 
         // create blood screen
         bloodScreen = ImageSprite new(vec2(0, 0), "assets/svg/bloodScreen.svg")
-        bloodScreen alpha = 0.7
+        bloodScreen scale set!(width / 1920.0, height / 1080.0)
 
         // create game over screen
         gameoverUI = GroupSprite new()

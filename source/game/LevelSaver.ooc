@@ -27,6 +27,7 @@ LevelSaver: class {
             make object(
                 "name", level name,
                 "author", level author,
+                "totalHits", level totalHitsNumber,
                 "objects", objects(make, level)
             )
         )
