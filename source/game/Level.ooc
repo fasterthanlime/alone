@@ -49,6 +49,7 @@ Level: class {
     hero: Hero
 
     haveWon := false
+    haveLost := false
     wonCounter := 0
 
     endSprite: ImageSprite
@@ -68,6 +69,7 @@ Level: class {
     reset: func {
         // reset score
         haveWon = false
+        haveLost = false
         hitsNumber = 0
 
         // clear temp actors
@@ -140,7 +142,8 @@ Level: class {
                 }
             }
         } else {
-            if (hero life <= 0) {
+            if (hero life <= 0 && !haveLost) {
+                haveLost = true
                 engine ui mode = UIMode GAME_OVER
             }
 
