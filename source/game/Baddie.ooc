@@ -1,14 +1,15 @@
 
 // game deps
 import ui/[Sprite, MainUI]
-import Engine, Level, Hero, Collision
+import Engine, Level, Hero, Collision, Vacuum
 
 import math/[Vec2, Vec3, Random]
 
 BaddieState: enum {
     CMON,
     GTFO,
-    WTF
+    WTF,
+    DUI
 }
 
 Baddie: class extends Actor {
@@ -35,6 +36,9 @@ Baddie: class extends Actor {
     scale := 0.5
 
     state := BaddieState CMON
+    attractor: Vacuum
+
+    gtfoCounter := -1
 
     init: func (=level) {
         hero = level hero
@@ -67,27 +71,56 @@ Baddie: class extends Actor {
     update: func (delta: Float) {
         diff := hero body pos sub(body pos)
         motion := diff
-        alpha := 0.05
+        alpha := 0.2
+
+        vacuumInfluence := 300.0
+
+        // attempt to find close vacuums
+        changed := false
+        level vacuums each(|vacuum|
+            dist := vacuum pos sub(body pos) norm()
+            if (dist < vacuumInfluence) {
+                changed = true
+                state = BaddieState DUI
+                attractor = vacuum
+            }
+            targetAlpha := dist / vacuumInfluence
+            if (mainSprite alpha > targetAlpha) {
+                mainSprite alpha = targetAlpha
+            }
+        )
 
         match (state) {
+            case BaddieState DUI =>
+                motion = attractor pos sub(body pos)
             case BaddieState CMON =>
-                motion = diff
+                motion = diff mul(3.0)
             case BaddieState GTFO =>
-                alpha = 0.2
+                alpha = 0.1
                 motion = diff mul(-1)
             case BaddieState WTF =>
                 motion = vec2(Random randInt(-200, 200), Random randInt(-200, 200))
         }
 
-        if (hero body speed norm() > 3.0) {
-            state = BaddieState CMON 
-            level collides?(box, |bang|
+        if (!changed) {
+            if (hero body speed norm() > 3.0) {
+                state = BaddieState CMON 
+                level collides?(box, |bang|
+                    state = BaddieState WTF
+                    motion = bang dir mul(bang depth)
+                )
+                gtfoCounter = 120
+            } else if (diff norm() < 200.0) {
+                if (gtfoCounter == 0) {
+                    state = BaddieState GTFO
+                } else {
+                    state = BaddieState CMON
+                }
+                gtfoCounter = gtfoCounter - 1
+            } else {
                 state = BaddieState WTF
-            )
-        } else if (diff norm() < 300.0) {
-            state = BaddieState GTFO
-        } else {
-            state = BaddieState WTF
+                gtfoCounter = 120
+            }
         }
 
         body speed interpolate!(motion normalized() mul(speed), alpha)

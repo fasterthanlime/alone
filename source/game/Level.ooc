@@ -3,7 +3,7 @@ use deadlogger
 // game deps
 import Engine, Camera, Editor
 import ui/[Sprite, MainUI]
-import Hero, Baddie, Platform, Collision, Vacuum
+import Hero, Baddie, Platform, Collision, Vacuum, Decor
     
 import math/[Vec2, Vec3, Random]
 
@@ -21,6 +21,7 @@ Level: class {
     swarms := ArrayList<Swarm> new()
     platforms := ArrayList<Platform> new()
     vacuums := ArrayList<Vacuum> new()
+    decors := ArrayList<Decor> new()
 
     name := "<untitled>"
     author := "<unknown>"
@@ -68,9 +69,14 @@ Level: class {
                 baddie := Baddie new(this)
 
                 logger info("Spawning baddie at " + swarm center _)
-
-                // TODO: place in area
-                baddie body pos set!(swarm center)
+            
+                // this is, like, the ugliest way to generate random
+                // points in a circle. Ever.
+                randX := Random randInt(-10000000, 10000000)
+                randY := Random randInt(-10000000, 10000000)
+                v := vec2(randX / 10.0, randY / 10.0) sub(swarm center)
+                v = v normalized() mul(Random randInt(0, (swarm radius * 10) as Int) / 10.0)
+                baddie body pos set!(v add(swarm center))
                 actors add(baddie)
             )
         )
@@ -82,6 +88,8 @@ Level: class {
                 actor update(delta)
             )
         }
+
+        swarms each(|swarm| swarm update(delta))
         
         // update those separately, in case
         // we want to clear actors
@@ -143,7 +151,19 @@ Swarm: class extends Actor {
     center := vec2(0)
     radius := 100.0
 
-    init: func {}
+    mainSprite: EllipseSprite
+
+    init: func (=level) {
+        mainSprite = EllipseSprite new(vec2(0))
+        mainSprite filled = false
+        mainSprite color = vec3(1.0, 1.0, 0.3)
+        level debugSprites add(mainSprite)
+    }
+
+    update: func (delta: Float) {
+        mainSprite pos set!(center)
+        mainSprite radius = radius
+    }
 
     toString: func -> String {
         "swarm of %d at %s in a radius of %.2f" format(population, center _, radius)

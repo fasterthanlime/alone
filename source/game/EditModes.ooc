@@ -1,7 +1,7 @@
 
 // game deps
 import ui/[MainUI, Input, Sprite]
-import game/[Level, Platform, Hero, Camera, Vacuum]
+import game/[Level, Platform, Hero, Camera, Vacuum, Decor]
 import Editor, LevelSaver, LevelLoader
 import math/[Vec2, Vec3]
 
@@ -186,8 +186,8 @@ DecorDroppable: class extends Droppable {
 
     drop: func {
         textInput(mode editor, "Drop custom SVG", "assets/svg/", |response| 
-            sprite := SvgSprite new(vec2(0), 1.0, response)
-            mode level bgSprites add(sprite)
+            decor := Decor new(mode level, response, vec2(0), 1.0)
+            mode level decors add(decor)
         )
     }
 
@@ -227,6 +227,63 @@ PlatformDroppable: class extends Droppable {
     }
 
     getName: func -> String { kind + " platform" }
+
+}
+
+SwarmDroppable: class extends Droppable {
+
+    swarm: Swarm
+    lineSprite: LineSprite
+
+    input: Proxy
+
+    init: func (=mode) {
+        input = mode input sub() 
+
+        swarm = Swarm new(mode level)
+        swarm mainSprite visible = false
+
+        lineSprite = LineSprite new()
+        lineSprite visible = false
+        mode level fgSprites add(lineSprite)
+
+        input onMousePress(Buttons LEFT, ||
+            swarm mainSprite visible = true
+            lineSprite start set!(mode level camera mouseworldpos)
+            lineSprite end   set!(mode level camera mouseworldpos)
+            swarm center = lineSprite start
+            swarm update(1.0)
+        )
+
+        input onMouseDrag(Buttons LEFT, ||
+            lineSprite end   set!(mode level camera mouseworldpos)
+            swarm radius = lineSprite end sub(lineSprite start) norm()
+            swarm update(1.0)
+        )
+
+        input enabled = false
+    }
+
+    drop: func {
+        droppedSwarm := Swarm new(mode level)
+        droppedSwarm center set!(swarm center)
+        droppedSwarm radius = swarm radius
+        droppedSwarm population = swarm radius / 15
+        mode level swarms add(droppedSwarm)
+        swarm mainSprite visible = false
+    }
+
+    enter: func {
+        input enabled = true
+        swarm mainSprite visible = true
+    }
+
+    leave: func {
+        input enabled = false
+        swarm mainSprite visible = false
+    }
+
+    getName: func -> String { "swarm" }
 
 }
 
@@ -398,6 +455,7 @@ DropMode: class extends EditMode {
         // TODO: read this from files instead
         droppables add(StartPoint new(this))
         droppables add(VacuumDroppable new(this))
+        droppables add(SwarmDroppable new(this))
         droppables add(DecorDroppable new(this))
         droppables add(PlatformDroppable new(this, "transparent"))
         droppables add(PlatformDroppable new(this, "metal"))

@@ -4,7 +4,7 @@ use deadlogger
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
-import Hero, Baddie, Platform, Vacuum
+import Hero, Baddie, Platform, Vacuum, Decor
     
 import math/[Vec2, Vec3, Random]
 
@@ -50,7 +50,7 @@ LevelLoader: class {
                     level startPos = readVec2(object, "pos")
                     logger info("Hero starting at position %s" format(level startPos _))
                 case "swarm" =>
-                    swarm := Swarm new()
+                    swarm := Swarm new(level)
                     swarm population = object get("population", Int)
                     swarm center = readVec2(object, "center")
                     swarm radius = readFloat(object, "radius")
@@ -67,6 +67,12 @@ LevelLoader: class {
                     logger info("Got vacuum at %s" format(pos _))
                     vacuum := Vacuum new(level, pos, angle)
                     level vacuums add(vacuum)
+                case "decor" =>
+                    path := object get("path", String)
+                    pos := readVec2(object, "pos")
+                    scale := readFloat(object, "scale")
+                    decor := Decor new(level, path, pos, scale)
+                    level decors add(decor)
             }
         }
 
