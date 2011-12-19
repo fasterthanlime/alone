@@ -389,6 +389,67 @@ VacuumDroppable: class extends Droppable {
 
 }
 
+EndPoint: class extends Droppable {
+
+    label: LabelSprite
+    pointer: EllipseSprite
+
+    input: Proxy
+
+    init: func (=mode) {
+        input = mode input sub()
+
+        pointer = EllipseSprite new(vec2(mode level endPos))
+        pointer color = vec3(0.3, 0.3, 1.0)
+        pointer radius = 40
+        pointer filled = false
+        pointer thickness = 10.0
+        pointer visible = false
+        mode level fgSprites add(pointer)
+
+        label = LabelSprite new(vec2(mode level endPos), "end") 
+        label fontSize = 38
+        label centered = true
+        label visible = false
+        mode level fgSprites add(label)
+
+        input onMouseDrag(Buttons LEFT, ||
+            drop()
+        )
+    }
+
+    update: func {
+        pointer pos set!(mode level camera mouseworldpos)
+    }
+
+    drop: func {
+        label pos set!(pointer pos)
+        mode level endPos set!(pointer pos)
+    }
+
+    globalEnter: func {
+        label visible = true
+    }
+
+    globalLeave: func {
+        label visible = false
+    }
+
+    enter: func {
+        input enabled = true
+        pointer visible = true
+    }
+
+    leave: func {
+        input enabled = false
+        pointer visible = false
+    }
+
+    getName: func -> String { "end point" }
+
+}
+
+
 StartPoint: class extends Droppable {
 
     label: LabelSprite
@@ -504,6 +565,7 @@ DropMode: class extends EditMode {
     initDroppables: func {
         // TODO: read this from files instead
         droppables add(StartPoint new(this))
+        droppables add(EndPoint new(this))
         droppables add(PlatformDroppable new(this, "transparent"))
         droppables add(PlatformDroppable new(this, "transparent-vertical"))
         droppables add(PlatformDroppable new(this, "transparent-small"))

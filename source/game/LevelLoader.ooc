@@ -33,6 +33,9 @@ LevelLoader: class {
         if(json contains?("totalHits")) {
             level totalHitsNumber = json get("totalHits", Int)
         }
+        if(json contains?("endPos")) {
+            level endPos set!(readVec2(json, "endPos"))
+        }
 
         logger debug("Level '%s', by '%s'" format(level name, level author))
 
