@@ -12,14 +12,17 @@ import math/[Vec2]
 // libs deps
 import deadlogger/Log
 import cairo/[Cairo, GdkCairo] 
-import structs/[HashMap]
+import structs/[HashMap, ArrayList]
 
 Editor: class extends Actor {
 
     logger := static Log getLogger(This name)
 
     ui: MainUI
+    sprites := ArrayList<Sprite> new()
+
     level: Level
+    levelName: String
 
     cameraSpeed := 25.0
 
@@ -32,7 +35,7 @@ Editor: class extends Actor {
 
     input: Proxy
 
-    init: func (=ui, =level) {
+    init: func (=ui, =level, =levelName) {
         input = ui input sub()
 
         setupEvents()
@@ -70,16 +73,6 @@ Editor: class extends Actor {
         // STUFF THAT ONLY WORKS IN EDIT MODE
         // -------------------
 
-        input onKeyPress(Keys F2, ||
-            // F2 = save
-            saver := LevelSaver new()
-            saver save(level, "/tmp/level.json")
-        )
-
-        input onKeyPress(Keys E, ||
-            change(DROP)
-        )
-
     }
 
     moveCamera: func (x, y: Float) {
@@ -95,6 +88,8 @@ Editor: class extends Actor {
         cr showText("edit mode: %s" format(mode name))
 
         mode paint(cr)
+
+        sprites each(|sprite| sprite draw(cr))
     }
 
     update: func (delta: Float) {

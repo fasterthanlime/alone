@@ -111,8 +111,10 @@ Proxy: abstract class {
      * then match on its type to see which event
      * it is.
      */
-    onEvent: func (cb: Func(Event)) {
-        listeners add(Listener new(cb))
+    onEvent: func (cb: Func(Event)) -> Listener {
+        listener := Listener new(cb)
+        listeners add(listener)
+        listener
     }
 
     onKeyPress: func (which: UInt, cb: Func) {
@@ -154,18 +156,20 @@ Proxy: abstract class {
     isButtonPressed: abstract func (button: Int) -> Bool
 
     grab: func (l: Listener) {
+        listeners remove(l)
         _grab = l
     }
 
-    ungrab: func (l: Listener) {
-        if(l != _grab) {
-            logger warn("Ungrabbing %p but it was %p who was grabbed" format(l, _grab))
-        }
+    ungrab: func {
         _grab = null
     }
 
     sub: func -> SubProxy {
         SubProxy new(this)
+    }
+
+    nuke: func {
+        // not much to do here
     }
 
     //---------------
@@ -186,10 +190,11 @@ Proxy: abstract class {
 
 SubProxy: class extends Proxy {
 
+    own: Listener
     parent: Proxy
 
     init: func (=parent) {
-        parent onEvent(|ev|
+        own = parent onEvent(|ev|
             _notifyListeners(ev)
         )
     }
@@ -203,15 +208,22 @@ SubProxy: class extends Proxy {
     }
 
     grab: func (l: Listener) {
+        listeners remove(l)
+        _grab = l
         parent grab(l)
     }
 
-    ungrab: func (l: Listener) {
-        parent ungrab(l)
+    ungrab: func {
+        _grab = null
+        parent ungrab()
     }
 
     getMousePos: func -> Vec2 {
         parent mousepos
+    }
+
+    nuke: func {
+        parent listeners remove(own)
     }
 
 }
@@ -247,11 +259,19 @@ Input: class extends Proxy {
         if (keyval >= MAX_KEY) {
             return false
         }
+        // TODO: this is problematic - what if the
+        // grabbed listener wants to know?
+        if (_grab) {
+            return false
+        }
         keyState[keyval]
     }
 
     isButtonPressed: func (button: Int) -> Bool {
         if (button >= MAX_BUTTON) {
+            return false
+        }
+        if (_grab) {
             return false
         }
         buttonState[button]
@@ -324,6 +344,7 @@ Keys: enum from UInt {
     LEFT  = 65361
     RIGHT = 65363
     SPACE = 32
+    ENTER = 65293
     F1    = 65470
     F2    = 65471
     F3    = 65472

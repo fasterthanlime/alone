@@ -2,7 +2,7 @@
 // game deps
 import ui/[MainUI, Input, Sprite]
 import game/[Level, Platform, Hero, Camera]
-import Editor
+import Editor, LevelSaver, LevelLoader
 import math/[Vec2, Vec3]
 
 // libs deps
@@ -44,9 +44,109 @@ EditMode: class {
 
 }
 
+// text box for input
+textInput: func (editor: Editor, titleText, initial: String, cb: Func (String)) {
+
+    ui := editor ui
+    level := editor level
+
+    marginX := 60.0
+    outlineHeight := 200.0
+    height := 50
+
+    controls := GroupSprite new()
+    editor sprites add(controls)
+
+    outline := RectSprite new(vec2(ui width / 2, ui height / 2))
+    outline size = vec2(ui width - marginX, outlineHeight)
+    outline alpha = 0.8
+    outline color = vec3(0, 0, 0)
+    controls add(outline)
+
+    title := LabelSprite new(vec2(marginX + 5, ui height / 2 - height / 2 - 22), titleText)
+    title fontSize = 44.0
+    title color = vec3(0.8, 0.8, 0.8)
+    controls add(title)
+
+    box := RectSprite new(vec2(ui width / 2, ui height / 2))
+    box filled = false
+    box thickness = 1.0
+    box size = vec2(ui width - 2 * marginX, height)
+    box color = vec3(0.1, 0.1, 0.1)
+    controls add(box)
+
+    boxbg := RectSprite new(vec2(ui width / 2, ui height / 2))
+    boxbg size = vec2(ui width - 2 * marginX, height)
+    boxbg color = vec3(1.0, 1.0, 1.0)
+    boxbg alpha = 0.8
+    controls add(boxbg)
+
+    value := initial _buffer clone(1024)
+
+    text := LabelSprite new(vec2(marginX + 5, ui height / 2 - height / 2 + 42), value toString())
+    text fontSize = 44.0
+    text color = vec3(0.1, 0.1, 0.1)
+    controls add(text)
+
+    input := editor input sub()
+    input grab(input onEvent(|ev|
+        match (ev) {
+            case kp: KeyPress =>
+                if (kp code == Keys ESC || kp code == Keys ENTER) {
+                    input ungrab(). nuke()
+                    editor sprites remove(controls)
+                    if(kp code == Keys ENTER) {
+                        cb(value toString())
+                    }
+                } else if (kp code >= 32 && kp code <= 126) {
+                    value append(kp code as Char)
+                    text text = value toString()
+                } else if(kp code == Keys BACKSPACE) {
+                    if (value size > 0) {
+                        value setLength(value size - 1)
+                    }
+                }
+        }
+    ))
+}
+
 IdleMode: class extends EditMode {
 
-    init: super func
+    input: Proxy
+
+    init: func (=editor) {
+        input = editor input sub()
+
+        input onKeyPress(Keys F1, ||
+            // F1 = load
+            textInput(editor, "Load level", editor levelName, |response|
+                editor levelName = response
+                loader := LevelLoader new(editor level engine)
+                // level := loader load(levelName)
+            )
+        )
+
+        input onKeyPress(Keys F2, ||
+            // F2 = save
+            textInput(editor, "Save level", editor levelName, |response|
+                editor levelName = response
+                saver := LevelSaver new()
+                saver save(editor level, editor levelName)
+            )
+        )
+
+        input onKeyPress(Keys E, ||
+            editor change(editor DROP)
+        )
+    }
+
+    enter: func {
+        input enabled = true
+    }
+
+    leave: func {
+        input enabled = false
+    }
 
     // nothing to do man. It's idle time!
     getName: func -> String { "Idle" }

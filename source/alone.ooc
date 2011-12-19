@@ -27,9 +27,9 @@ main: func {
 
     loader := LevelLoader new(engine)
 
-
+    levelName := config["startLevel"]
     level: Level
-    level = loader load("assets/levels/%s.json" format(config["startLevel"]))
+    level = loader load(levelName)
     ui level = level
 
     level start()

@@ -1,6 +1,4 @@
-
-use deadlogger
-
+use deadlogger 
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
@@ -20,7 +18,9 @@ LevelSaver: class {
 
     init: func () {}
 
-    save: func (level: Level, path: String) {
+    save: func (level: Level, levelName: String) {
+        path := "assets/levels/%s.json" format(levelName)
+
         logger debug("Saving json %s!" format(path))
 
         result := DSL new() json(|make|

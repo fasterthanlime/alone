@@ -21,11 +21,13 @@ LevelLoader: class {
 
     init: func (=engine)
 
-    load: func (path: String) -> Level {
+    load: func (levelName: String) -> Level {
+        path := "assets/levels/%s.json" format(levelName)
+
         logger debug("Loading json %s!" format(path))
         json := JSON parse(FileReader new(path), HashBag)
 
-        level := Level new(engine)
+        level := Level new(engine, levelName)
         level name   = json get("name",   String)
         level author = json get("author", String)
 

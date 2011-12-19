@@ -7,7 +7,7 @@ import math/[Vec2, Vec3]
 import deadlogger/Log
 import cairo/Cairo
 import rsvg
-import structs/HashMap
+import structs/[HashMap, ArrayList]
 
 Sprite: class {
 
@@ -63,6 +63,26 @@ Sprite: class {
     free: func {
         // in theory, release resources
         // in practice, nothing to do in the base class
+    }
+
+}
+
+GroupSprite: class extends Sprite {
+
+    children := ArrayList<Sprite> new()
+
+    init: func {
+        super(vec2(0, 0))
+    }
+
+    draw: func (cr: Context) {
+        if (!visible) return
+
+        children each(|child| child draw(cr))
+    }
+
+    add: func (s: Sprite) {
+        children add(s)
     }
 
 }

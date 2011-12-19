@@ -39,12 +39,12 @@ Level: class {
     editor: Editor
     hero: Hero
 
-    init: func (=engine) {
+    init: func (=engine, levelName: String) {
         hero = Hero new(this)
         actors add(hero)
 
         camera = Camera new(engine ui)
-        editor = Editor new(engine ui, this)
+        editor = Editor new(engine ui, this, levelName)
     }
 
     reset: func {
