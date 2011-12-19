@@ -58,6 +58,7 @@ LevelLoader: class {
                     pos := readVec2(object, "pos")
                     kind := object get("kind", String)
                     platform := Platform new(level, pos, kind)
+                    level platforms add(platform)
             }
         }
 

@@ -89,7 +89,8 @@ PlatformDroppable: class extends Droppable {
         plat = Platform new(mode level, vec2(INF), kind)
         plat mainSprite visible = false
         plat mainSprite alpha = 0.5
-        mode level actors add(plat)
+        // don't add ghost platforms to the level! We don't
+        // want them saved :)
     }
 
     update: func {
@@ -107,7 +108,7 @@ PlatformDroppable: class extends Droppable {
 
     drop: func {
         platform := Platform new(mode level, vec2(plat pos), plat kind)
-        mode level actors add(platform)
+        mode level platforms add(platform)
     }
 
     getName: func -> String { kind + " platform" }

@@ -21,6 +21,7 @@ Level: class {
     actors := ArrayList<Actor> new()
     collideables := ArrayList<Collideable> new()
     swarms := ArrayList<Swarm> new()
+    platforms := ArrayList<Platform> new()
 
     name := "<untitled>"
     author := "<unknown>"

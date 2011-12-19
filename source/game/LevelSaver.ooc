@@ -41,28 +41,43 @@ LevelSaver: class {
             "path", level backgroundPath
         ))
 
+        bag add(make object(
+            "type", "hero",
+            "pos", toArray(level startPos)
+        ))
+
         level swarms each(|swarm|
             bag add(make object(
-                "population", toNumber(swarm population),
-                "radius", toNumber(swarm radius),
+                "type", "swarm",
+                "population", intToNumber(swarm population),
+                "radius", floatToNumber(swarm radius),
                 "center", toArray(swarm center)
             ))
         )
+
+        level platforms each(|p|
+            bag add(make object(
+                "type", "platform",
+                "pos", toArray(p pos),
+                "kind", p kind
+            ))
+        )
+
         bag
     }
 
-    toNumber: func ~float (f: Float) -> Number {
+    floatToNumber: func (f: Float) -> Number {
         Number new(f toString())
     }
 
-    toNumber: func ~int (i: Int) -> Number {
+    intToNumber: func (i: Int) -> Number {
         Number new(i toString())
     }
 
     toArray: func (v: Vec2) -> Bag {
         bag := Bag new()
-        bag add(toNumber(v x))
-        bag add(toNumber(v y))
+        bag add(floatToNumber(v x))
+        bag add(floatToNumber(v y))
         bag
     }
 }

@@ -29,7 +29,7 @@ main: func {
 
 
     level: Level
-    level = loader load("assets/levels/level1.json")
+    level = loader load("assets/levels/%s.json" format(config["startLevel"]))
     ui level = level
 
     level start()
