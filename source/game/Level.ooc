@@ -35,6 +35,9 @@ Level: class {
     fgSprites := ArrayList<Sprite> new()
     debugSprites := ArrayList<Sprite> new()
 
+    totalHitsNumber := 10
+    hitsNumber := 0
+
     camera: Camera
     editor: Editor
     hero: Hero
@@ -48,6 +51,9 @@ Level: class {
     }
 
     reset: func {
+        // reset score
+        hitsNumber = 0
+
         // clear temp actors
         iter := actors iterator()
         while (iter hasNext?()) {
