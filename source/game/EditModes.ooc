@@ -119,7 +119,11 @@ StartPoint: class extends Droppable {
     label: LabelSprite
     pointer: EllipseSprite
 
+    input: Proxy
+
     init: func (=mode) {
+        input = mode input sub()
+
         pointer = EllipseSprite new(vec2(mode level startPos))
         pointer color = vec3(0.3, 0.3, 1.0)
         pointer radius = 40
@@ -133,6 +137,10 @@ StartPoint: class extends Droppable {
         label centered = true
         label visible = false
         mode level fgSprites add(label)
+
+        input onMouseDrag(Buttons LEFT, ||
+            drop()
+        )
     }
 
     update: func {
@@ -153,10 +161,12 @@ StartPoint: class extends Droppable {
     }
 
     enter: func {
+        input enabled = true
         pointer visible = true
     }
 
     leave: func {
+        input enabled = false
         pointer visible = false
     }
 

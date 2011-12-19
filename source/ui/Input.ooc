@@ -98,6 +98,12 @@ Proxy: abstract class {
     listeners := ArrayList<Listener> new()
     _grab: Listener
 
+    mousepos: Vec2 {
+        get { getMousePos() }
+    }
+
+    getMousePos: abstract func -> Vec2
+
     enabled := true
 
     /**
@@ -131,7 +137,7 @@ Proxy: abstract class {
         onEvent(|ev|
             match (ev) {
                 case mm: MouseMotion =>
-                    if(isPressed(which)) {
+                    if(isButtonPressed(which)) {
                         // it's a drag!
                         cb()
                     }
@@ -204,6 +210,10 @@ SubProxy: class extends Proxy {
         parent ungrab(l)
     }
 
+    getMousePos: func -> Vec2 {
+        parent mousepos
+    }
+
 }
 
 Input: class extends Proxy {
@@ -221,7 +231,7 @@ Input: class extends Proxy {
     ui: MainUI
     win: Window
 
-    mousepos := vec2(0.0, 0.0)
+    _mousepos := vec2(0.0, 0.0)
 
     init: func (=ui) {
         win = ui win
@@ -255,6 +265,7 @@ Input: class extends Proxy {
         // make sure gdk sends us all the right events
         win addEvents(GdkEventMask POINTER_MOTION_MASK)
         win addEvents(GdkEventMask BUTTON_PRESS_MASK)
+        win addEvents(GdkEventMask BUTTON_RELEASE_MASK)
 
         // register all event listeners
         win connectKeyEvent("key-press-event",       |ev| _keyPressed (ev))
@@ -282,20 +293,24 @@ Input: class extends Proxy {
     }
 
     _mouseMoved: func (ev: EventMotion*) {
-        (mousepos x, mousepos y) = (ev@ x, ev@ y)
-        _notifyListeners(MouseMotion new(mousepos))
+        (_mousepos x, _mousepos y) = (ev@ x, ev@ y)
+        _notifyListeners(MouseMotion new(_mousepos))
     }
 
     _mousePressed: func (ev: EventButton*) {
-        logger debug("Mouse pressed at %s" format(mousepos _))
+        logger debug("Mouse pressed at %s" format(_mousepos _))
         buttonState[ev@ button] = true
-        _notifyListeners(MousePress new(mousepos, ev@ button))
+        _notifyListeners(MousePress new(_mousepos, ev@ button))
     }
 
     _mouseReleased: func (ev: EventButton*) {
-        logger debug("Mouse released at %s" format(mousepos _))
+        logger debug("Mouse released at %s" format(_mousepos _))
         buttonState[ev@ button] = false
-        _notifyListeners(MouseRelease new(mousepos, ev@ button))
+        _notifyListeners(MouseRelease new(_mousepos, ev@ button))
+    }
+
+    getMousePos: func -> Vec2 {
+        _mousepos
     }
 
 }
