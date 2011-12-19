@@ -126,6 +126,15 @@ Proxy: abstract class {
         )
     }
 
+    onKeyRelease: func (which: UInt, cb: Func) {
+        onEvent(|ev|
+            match (ev) {
+                case kr: KeyRelease => 
+                    if(kr code == which) cb()
+            }
+        )
+    }
+
     onMousePress: func (which: UInt, cb: Func) {
         onEvent(|ev|
             match (ev) {

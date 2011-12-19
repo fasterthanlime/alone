@@ -187,15 +187,46 @@ Droppable: class {
 
 DecorDroppable: class extends Droppable {
 
-    init: func (=mode) {
+    decor: Decor
 
+    input: Input
+
+    init: func (=mode) {
+        input = mode input sub()
+        decor = Decor new(mode level, "assets/svg/sign.svg", vec2(0), 1.0)
+        decor mainSprite alpha = 0.6
+
+        // feinte du loup des bois
+        mode level bgSprites remove(decor mainSprite)
+        mode level debugSprites add(decor mainSprite)
+
+        input onKeyRelease(Keys ENTER, ||
+            this // silly ooc workaround number two!
+            textInput(mode editor, "Choose decor SVG path", "assets/svg/", |response| 
+                decor changeSprite(response)
+                decor mainSprite alpha = 0.6
+            )
+        )
+    }
+
+    update: func {
+        decor pos set!(mode level camera mouseworldpos)
+        decor update(1.0)
+    }
+
+    enter: func {
+        decor mainSprite visible = true
+        input enabled = true
+    }
+
+    leave: func {
+        decor mainSprite visible = false
+        input enabled = false
     }
 
     drop: func {
-        textInput(mode editor, "Drop custom SVG", "assets/svg/", |response| 
-            decor := Decor new(mode level, response, vec2(0), 1.0)
-            mode level decors add(decor)
-        )
+        droppedDecor := Decor new(mode level, decor path, decor pos clone(), decor scale)
+        mode level decors add(decor)
     }
 
     getName: func -> String { "decor" }
@@ -461,16 +492,13 @@ DropMode: class extends EditMode {
     initDroppables: func {
         // TODO: read this from files instead
         droppables add(StartPoint new(this))
-        droppables add(VacuumDroppable new(this))
-        droppables add(SwarmDroppable new(this))
-        droppables add(DecorDroppable new(this))
         droppables add(PlatformDroppable new(this, "transparent"))
-        droppables add(PlatformDroppable new(this, "transparent-small"))
         droppables add(PlatformDroppable new(this, "transparent-vertical"))
+        droppables add(PlatformDroppable new(this, "transparent-small"))
         droppables add(PlatformDroppable new(this, "transparent-small-vertical"))
-        droppables add(PlatformDroppable new(this, "metal"))
-        droppables add(PlatformDroppable new(this, "wood"))
-        droppables add(PlatformDroppable new(this, "glass"))
+        droppables add(DecorDroppable new(this))
+        droppables add(SwarmDroppable new(this))
+        droppables add(VacuumDroppable new(this))
 
         droppable = droppables[0]
     }

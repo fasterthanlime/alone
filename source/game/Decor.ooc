@@ -20,8 +20,15 @@ Decor: class extends Actor {
         level bgSprites add(mainSprite)
     }
 
+    changeSprite: func (=path) {
+        level bgSprites remove(mainSprite)
+        mainSprite = SvgSprite new(pos, path)
+        level bgSprites add(mainSprite)
+        update(1.0)
+    }
+
     update: func (delta: Float) {
-        mainSprite pos = pos
+        mainSprite pos set!(pos)
         mainSprite scale set!(scale, scale)
     }
 }
