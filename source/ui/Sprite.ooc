@@ -17,6 +17,7 @@ Sprite: class {
     scale := vec2(1.0, 1.0)
     color := vec3(1.0, 0.0, 0.0)
     alpha := 1.0
+    visible := true
 
     init: func (=pos)
    
@@ -32,6 +33,8 @@ Sprite: class {
      * Hellzyeah.
      */
     draw: func (cr: Context) {
+        if (!visible) return
+
         cr save()
         cr translate(pos x + offset x, pos y + offset y)
         cr scale(scale x, scale y)
@@ -73,11 +76,13 @@ RectSprite: class extends Sprite {
 
     size := vec2(1.0, 1.0)
     filled := true
+    thickness := 3.0
 
     paint: func (cr: Context) {
         halfWidth  := size x * 0.5
         halfHeight := size y * 0.5
 
+        cr setLineWidth(thickness)
         cr moveTo(-halfWidth, -halfHeight)
         cr lineTo( halfWidth, -halfHeight)
         cr lineTo( halfWidth,  halfHeight)
@@ -97,20 +102,49 @@ RectSprite: class extends Sprite {
  */
 EllipseSprite: class extends Sprite {
 
-    init: super func
-
-    size := vec2(1.0, 1.0)
+    radius := 15.0
     filled := true
+    thickness := 3.0
+
+    init: func (=pos) {}
 
     paint: func (cr: Context) {
         // full circle!
-        cr scale(size x, size y)
-        cr arc(0.0, 0.0, 1.0, 0.0, 3.142 * 2)
+        cr setLineWidth(thickness)
+        cr newSubPath()
+        cr arc(0.0, 0.0, radius, 0.0, 3.142 * 2)
+
         if (filled) {
             cr fill()
         } else {
             cr stroke()
         }
+    }
+
+}
+
+/**
+ * A label that displays text
+ */
+LabelSprite: class extends Sprite {
+
+    text: String
+    fontSize := 22.0
+    family := "Impact"
+    centered := false
+
+    init: func (=pos, =text) { }
+
+    paint: func (cr: Context) {
+        cr selectFontFace(family, CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+        cr setFontSize(fontSize)
+
+        if (centered) {
+            extents: TextExtents
+            cr textExtents(text, extents&)
+            cr translate (-extents width / 2, extents height / 2)
+        }
+        cr showText(text)
     }
 
 }

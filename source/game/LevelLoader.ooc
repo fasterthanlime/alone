@@ -43,13 +43,15 @@ LevelLoader: class {
                     bg tiled = true
                     level bgSprites add(bg)
                 case "hero" =>
-                    level hero body pos = readVec2(object, "pos")
-                    logger info("Hero starting at position %s" format(level hero body pos _))
+                    level startPos = readVec2(object, "pos")
+                    logger info("Hero starting at position %s" format(level startPos _))
                 case "swarm" =>
-                    object get("population", Int) times(||
-                        baddie := Baddie new(level)
-                        level actors add(baddie)
-                    )
+                    swarm := Swarm new()
+                    swarm population = object get("population", Int)
+                    swarm center = readVec2(object, "center")
+                    swarm radius = readFloat(object, "radius")
+                    logger info("Got " + swarm _)
+                    level swarms add(swarm)
                 case "platform" =>
                     pos := readVec2(object, "pos")
                     kind := object get("kind", String)
@@ -57,6 +59,7 @@ LevelLoader: class {
             }
         }
 
+        level reset()
         level
     }
 
@@ -65,6 +68,10 @@ LevelLoader: class {
         x := bag get(0, Number) value toFloat()
         y := bag get(1, Number) value toFloat()
         vec2(x, y)
+    }
+
+    readFloat: func (hb: HashBag, key: String) -> Float {
+        hb get(key, Number) value toFloat()
     }
 
 }

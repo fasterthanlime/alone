@@ -50,8 +50,9 @@
 
         {
             "type": "swarm",
-            "pos": [ 40.0, 40.0 ],
-            "population": 8
+            "center": [ 400.0, 50.0 ],
+            "population": 8,
+            "radius": 100.0
         }
     ]
 }

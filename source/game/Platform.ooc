@@ -38,3 +38,4 @@ Platform: class extends Actor {
         mainSprite pos = pos
     }
 }
+

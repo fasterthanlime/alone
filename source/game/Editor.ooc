@@ -6,11 +6,13 @@
 // game deps
 import ui/[MainUI, Input, Sprite]
 import game/[Level, Platform, Hero, Camera]
+import EditModes
 import math/[Vec2]
 
 // libs deps
 import deadlogger/Log
 import cairo/[Cairo, GdkCairo] 
+import structs/[HashMap]
 
 Editor: class extends Actor {
 
@@ -20,39 +22,53 @@ Editor: class extends Actor {
     level: Level
     input: Input
 
-    cameraSpeed := 18.0
+    cameraSpeed := 25.0
 
-    currentPlatform: Platform
+    // ALLLL the possible modes
+    IDLE: EditMode
+    DROP: EditMode
 
-    INF := -10000000000.0 // probably not in the level ;)
+    // the current mode
+    mode: EditMode
 
     init: func (=ui, =level) {
         input = ui input
 
+        setupEvents()
+        setupEditModes()
+    }
+
+    setupEditModes: func {
+        IDLE = IdleMode new(this)
+        DROP = DropMode new(this)
+
+        mode = IDLE
+    }
+
+    setupEvents: func {
+        // mode swap
         input onKeyPress(Keys F12, ||
             ui mode = match (ui mode) {
                 case UIMode EDITOR =>
-                    currentPlatform mainSprite alpha = 0.0
+                    mode leave()
                     UIMode GAME
                 case UIMode GAME   =>
-                    currentPlatform mainSprite alpha = 0.5
+                    mode enter()
                     UIMode EDITOR
             }
         )
 
-        input onMousePress(Buttons LEFT, || leftClick())
+        input onKeyPress(Keys BACKSPACE, ||
+            // works in both mode for debug
 
-        currentPlatform = Platform new(level, vec2(INF), "metal")
-        currentPlatform mainSprite alpha = 0.0
-        level actors add(currentPlatform)
-    }
+            level reset()
+        )
 
-    leftClick: func {
-        if (ui mode != UIMode EDITOR) return
+        input onKeyPress(Keys E, ||
+            if (ui mode != UIMode EDITOR) return
 
-        // TODO: snap to grid
-        platform := Platform new(level, vec2(currentPlatform pos), currentPlatform kind)
-        level actors add(platform)
+            change(DROP)
+        )
     }
 
     moveCamera: func (x, y: Float) {
@@ -66,20 +82,31 @@ Editor: class extends Actor {
         cr setFontSize(80.0)
         cr setSourceRGB(1.0, 0.3, 0.3)
         cr showText("EDITOR, BITCHES!")
+
+        cr moveTo(100, 100)
+        cr setFontSize(40.0)
+        cr showText("edit mode: %s" format(mode name))
+
+        mode paint(cr)
     }
 
     update: func (delta: Float) {
-        if (ui mode != UIMode EDITOR) {
-            currentPlatform pos set!(INF, INF)
-            return
-        }
+        mode update(delta)
 
         if(input isPressed(Keys W)) { moveCamera( 0, -1) }
         if(input isPressed(Keys A)) { moveCamera(-1,  0) }
         if(input isPressed(Keys S)) { moveCamera( 0,  1) }
         if(input isPressed(Keys D)) { moveCamera( 1,  0) }
+    }
 
-        currentPlatform pos set!(level camera mouseworldpos)
+    change: func (newMode: EditMode) {
+        if (ui mode == UIMode EDITOR) {
+            mode leave()
+            mode = newMode
+            mode enter()
+        } else {
+            mode = newMode
+        }
     }
 
 }
