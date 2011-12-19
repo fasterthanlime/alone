@@ -42,7 +42,7 @@ MainUI: class {
 
     translation := vec2(0, 0)
 
-    mode := UIMode GAME
+    mode := UIMode MENU
 
     init: func (config: ZombieConfig) {
         win = Window new(config["title"])
@@ -82,6 +82,7 @@ MainUI: class {
 
     gameoverUI: GroupSprite
     gamewinUI: GroupSprite
+    menuUI: GroupSprite
 
     hud: GroupSprite
     healthPercentageSprite: LabelSprite
@@ -95,6 +96,9 @@ MainUI: class {
     notifyCounter := 0
 
     bloodScreen: ImageSprite
+
+    blinkyText: LabelSprite
+    blinkyCounter := 20
 
     createUIParts: func {
         // create hud
@@ -186,6 +190,42 @@ MainUI: class {
         gamewinText centered = true
         gamewinText fontSize = 80.0
         gamewinUI add(gamewinText)
+
+        // create menu screen
+        menuUI = GroupSprite new()
+        menuBg := ImageSprite new(vec2(0, 0), "assets/png/titleScreenBg.png")
+        menuBg scale set!(width / 1920.0, height / 1080.0)
+        menuUI add(menuBg)
+
+        menuRect := RectSprite new(vec2(width / 2, 80))
+        menuRect size set!(width, 160)
+        menuRect color = vec3(0.0, 0.0, 0.0)
+        menuRect alpha = 0.7
+        menuUI add(menuRect)
+
+        menuRect = RectSprite new(vec2(width / 2, height - 40))
+        menuRect size set!(width, 80)
+        menuRect color = vec3(0.0, 0.0, 0.0)
+        menuRect alpha = 0.7
+        menuUI add(menuRect)
+
+        titleText := LabelSprite new(vec2(width / 2, 60), "LONELY PLANET")
+        titleText color = vec3(1.0, 1.0, 1.0)
+        titleText centered = true
+        titleText fontSize = 80.0
+        menuUI add(titleText)
+
+        titleText = LabelSprite new(vec2(width / 2, 130), "A story of love and loss. And kittens.")
+        titleText color = vec3(1.0, 1.0, 1.0)
+        titleText centered = true
+        titleText fontSize = 30.0
+        menuUI add(titleText)
+
+        blinkyText = LabelSprite new(vec2(width / 2, height - 40), "Press enter to start")
+        blinkyText color = vec3(1.0, 1.0, 1.0)
+        blinkyText centered = true
+        blinkyText fontSize = 30.0
+        menuUI add(blinkyText)
     }
     
     notify: func (msg: String, duration := 100) {
@@ -241,6 +281,13 @@ MainUI: class {
             gameoverUI draw(cr)
         } else if (mode == UIMode ULTIMATE_WIN) {
             gamewinUI draw(cr)
+        } else if (mode == UIMode MENU) {
+            blinkyCounter -= 1
+            if(blinkyCounter <= 0) {
+                blinkyCounter = 20
+                blinkyText visible = !blinkyText visible
+            }
+            menuUI draw(cr)
         }
     }
 
