@@ -13,7 +13,6 @@ import structs/[HashMap, ArrayList]
 EditMode: class {
 
     editor: Editor
-    enabled := false
 
     init: func (=editor) {}
 
@@ -168,7 +167,6 @@ StartPoint: class extends Droppable {
 DropMode: class extends EditMode {
 
     snappy := true
-    enabled := false
 
     level: Level
 
@@ -176,32 +174,29 @@ DropMode: class extends EditMode {
     droppable: Droppable
     index := 0
 
+    input: Proxy
+
     init: func (=editor) {
+        input = editor input sub()
         level = editor level
 
-        editor input onMousePress(Buttons LEFT, || 
-            if (!enabled) return
-
+        input onMousePress(Buttons LEFT, || 
             droppable drop()
         )
 
-        editor input onMousePress(Buttons RIGHT, ||
-            if (!enabled) return
+        input onMousePress(Buttons RIGHT, ||
             change(index + 1)
         )
 
-        editor input onKeyPress(Keys ESC, ||
-            if (!enabled) return
+        input onKeyPress(Keys ESC, ||
             editor change(editor IDLE)
         )
 
-        editor input onKeyPress(Keys RIGHT, ||
-            if (!enabled) return
+        input onKeyPress(Keys RIGHT, ||
             change(index + 1)
         )
 
-        editor input onKeyPress(Keys LEFT, ||
-            if (!enabled) return
+        input onKeyPress(Keys LEFT, ||
             change(index - 1)
         )
 
@@ -231,9 +226,7 @@ DropMode: class extends EditMode {
     }
 
     update: func (delta: Float) {
-        if (!enabled) return
-
-        snappy = !editor input isPressed(Keys ALT)
+        snappy = !input isPressed(Keys ALT)
         droppable update()
     }
 
@@ -267,14 +260,14 @@ DropMode: class extends EditMode {
         droppable enter()
         droppables each(|drop| drop globalEnter())
 
-        enabled = true
+        input enabled = true
     }
 
     leave: func {
         droppable leave()
         droppables each(|drop| drop globalLeave())
 
-        enabled = false
+        input enabled = false
     }
 
     getName: func -> String { "Drop" }
