@@ -141,6 +141,13 @@ IdleMode: class extends EditMode {
             )
         )
 
+        input onKeyPress(Keys F4, ||
+            // F4 = change maxscore
+            textInput(editor, "Minimum kills to win", editor level totalHitsNumber toString(), |response|
+                editor level totalHitsNumber = response toInt()
+            )
+        )
+
         input onKeyPress(Keys E, ||
             editor change(editor DROP)
         )

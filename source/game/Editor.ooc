@@ -50,15 +50,11 @@ Editor: class extends Actor {
     }
 
     setEnabled: func (b: Bool) {
-        if (input enabled == b) {
-            // don't enter/leave twice
-            return
-        }
         input enabled = b
         if (b) {
-            mode leave()
-        } else {
             mode enter()
+        } else {
+            mode leave()
         }
     }
 
@@ -73,7 +69,6 @@ Editor: class extends Actor {
         // -------------------
         // STUFF THAT ONLY WORKS IN EDIT MODE
         // -------------------
-
     }
 
     moveCamera: func (x, y: Float) {
@@ -83,6 +78,7 @@ Editor: class extends Actor {
     paint: func (cr: Context) {
         if (ui mode != UIMode EDITOR) return
 
+        cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
         cr setSourceRGB(1.0, 0.3, 0.3)
         cr moveTo(100, 100)
         cr setFontSize(40.0)
