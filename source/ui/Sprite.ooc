@@ -96,9 +96,19 @@ RotatedSprite: class extends Sprite {
         super(vec2(0))     
     }
 
-    paint: func (cr: Context) {
+    draw: func (cr: Context) {
+        if (!visible) return
+
+        cr save()
+        cr translate(pos x, pos y)
         cr rotate(angle)
+        cr translate(offset x, offset y)
+        cr scale(scale x, scale y)
+        cr setSourceRGBA(color x, color y, color z, alpha)
+
         sub paint(cr)
+
+        cr restore()
     }
 
 }
@@ -155,6 +165,26 @@ EllipseSprite: class extends Sprite {
         } else {
             cr stroke()
         }
+    }
+
+}
+
+LineSprite: class extends Sprite {
+
+    start := vec2(0)
+    end   := vec2(200)
+    thickness := 3.0
+
+    init: func {
+        super(vec2(0))
+    }
+
+    paint: func (cr: Context) {
+        cr setLineWidth(thickness)
+        cr moveTo(start x, start y)
+        cr lineTo(end x, end y)
+        cr closePath()
+        cr stroke()
     }
 
 }

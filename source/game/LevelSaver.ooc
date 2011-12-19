@@ -2,7 +2,7 @@ use deadlogger
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
-import Hero, Baddie, Platform
+import Hero, Baddie, Platform, Vacuum
     
 import math/[Vec2, Vec3, Random]
 
@@ -52,6 +52,14 @@ LevelSaver: class {
                 "population", intToNumber(swarm population),
                 "radius", floatToNumber(swarm radius),
                 "center", toArray(swarm center)
+            ))
+        )
+
+        level vacuums each(|vacuum|
+            bag add(make object(
+                "type", "vacuum",
+                "pos", toArray(vacuum pos),
+                "angle", floatToNumber(vacuum angle)
             ))
         )
 

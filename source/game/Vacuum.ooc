@@ -1,7 +1,7 @@
 
 // game deps
 import ui/[Sprite, MainUI]
-import Engine, Level, Hero, Collision
+import Engine, Level, Hero, Collision, Editor
 
 import math/[Vec2, Vec3, Random]
 
@@ -15,25 +15,19 @@ Vacuum: class extends Actor {
     angle := 0.0
 
     init: func (=level, =pos, =angle) {
-        svgSprite := SvgSprite new(pos, "assets/svg/Vacuum.svg")
-        svgSprite offset = vec2(-svgSprite width / 2, -svgSprite height / 2)
+        svgSprite := SvgSprite new(vec2(0), "assets/svg/Vacuum.svg")
         mainSprite = RotatedSprite new(svgSprite)
+        mainSprite pos = pos
         mainSprite angle = angle
-        level sprites add(mainSprite)
+        mainSprite offset = vec2(-svgSprite width / 2, -svgSprite height / 2)
 
-        // bb = RectSprite new(pos)
-        // bb filled = false
-        // bb size = vec2(mainSprite width, mainSprite height)
-        // bb color = vec3(1.0, 0.0, 1.0)
-        // level debugSprites add(bb)
-
-        // box = Box new(bb)
-        // level collideables add(box)
+        level debugSprites add(mainSprite)
     }
 
     update: func (delta: Float) {
-        bb pos = pos
+        // bb pos = pos
         mainSprite pos = pos
+        mainSprite angle = angle
     }
 }
 

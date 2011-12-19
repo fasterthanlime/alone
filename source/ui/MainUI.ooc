@@ -91,7 +91,8 @@ MainUI: class {
             level bgSprites each(|sprite| sprite draw(cr))
             level sprites each(|sprite| sprite draw(cr))
             level fgSprites each(|sprite| sprite draw(cr))
-            if(debug || debugRender) {
+
+            if(debug || debugRender || mode == UIMode EDITOR) {
                 level debugSprites each(|sprite| sprite draw(cr))
             }
         } else {

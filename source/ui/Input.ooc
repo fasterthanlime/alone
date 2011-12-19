@@ -135,6 +135,15 @@ Proxy: abstract class {
         )
     }
 
+    onMouseRelease: func (which: UInt, cb: Func) {
+        onEvent(|ev|
+            match (ev) {
+                case mp: MouseRelease =>
+                    if(mp button == which) cb()
+            }
+        )
+    }
+
     onMouseDrag: func (which: UInt, cb: Func) {
         onEvent(|ev|
             match (ev) {

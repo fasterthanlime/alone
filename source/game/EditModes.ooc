@@ -216,16 +216,48 @@ PlatformDroppable: class extends Droppable {
 VacuumDroppable: class extends Droppable {
 
     vacuum: Vacuum
+    lineSprite: LineSprite
+
+    input: Proxy
 
     init: func (=mode) {
+        input = mode input sub() 
+
         vacuum = Vacuum new(mode level, vec2(INF), 2.12)
+        lineSprite = LineSprite new()
+        lineSprite visible = false
+        mode level fgSprites add(lineSprite)
+
+        input onMousePress(Buttons LEFT, ||
+            vacuum mainSprite visible = true
+            lineSprite start set!(mode level camera mouseworldpos)
+            lineSprite end   set!(mode level camera mouseworldpos)
+            vacuum pos = lineSprite start
+            vacuum update(1.0)
+        )
+
+        input onMouseDrag(Buttons LEFT, ||
+            lineSprite end   set!(mode level camera mouseworldpos)
+            vacuum angle = lineSprite end sub(lineSprite start) angle() - (3.14 / 2.0)
+            vacuum update(1.0)
+        )
+
+        input enabled = false
+    }
+
+    drop: func {
+        droppedVacuum := Vacuum new(mode level, vec2(vacuum pos), vacuum angle)
+        mode level vacuums add(droppedVacuum)
+        vacuum mainSprite visible = false
     }
 
     enter: func {
+        input enabled = true
         vacuum mainSprite visible = true
     }
 
     leave: func {
+        input enabled = false
         vacuum mainSprite visible = false
     }
 
@@ -309,7 +341,7 @@ DropMode: class extends EditMode {
         input = editor input sub()
         level = editor level
 
-        input onMousePress(Buttons LEFT, || 
+        input onMouseRelease(Buttons LEFT, || 
             droppable drop()
         )
 
