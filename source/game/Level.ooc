@@ -35,6 +35,9 @@ Level: class {
     fgSprites := ArrayList<Sprite> new()
     debugSprites := ArrayList<Sprite> new()
 
+    totalHitsNumber := 10
+    hitsNumber := 0
+
     camera: Camera
     editor: Editor
     hero: Hero
@@ -48,6 +51,9 @@ Level: class {
     }
 
     reset: func {
+        // reset score
+        hitsNumber = 0
+
         // clear temp actors
         iter := actors iterator()
         while (iter hasNext?()) {
@@ -98,6 +104,10 @@ Level: class {
         editor update(delta)
 
         engine ui redraw()
+
+        if (hero life <= 0) {
+            engine ui mode = UIMode GAME_OVER
+        }
     }
 
     bind2: func (src, dst: Vec2) {

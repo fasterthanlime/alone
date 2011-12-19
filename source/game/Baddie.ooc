@@ -81,6 +81,7 @@ Baddie: class extends Actor {
         dead = true
         cleanup()
         level actors remove(this)
+        level hitsNumber += 1
     }
 
     update: func (delta: Float) {

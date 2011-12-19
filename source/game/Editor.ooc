@@ -49,24 +49,25 @@ Editor: class extends Actor {
         mode = IDLE
     }
 
-    setupEvents: func {
-        // mode swap
-        ui input onKeyPress(Keys F12, ||
-            ui mode = match (ui mode) {
-                case UIMode EDITOR =>
-                    input enabled = false
-                    mode leave()
-                    UIMode GAME
-                case UIMode GAME   =>
-                    input enabled = true
-                    mode enter()
-                    UIMode EDITOR
-            }
-        )
+    setEnabled: func (b: Bool) {
+        if (input enabled == b) {
+            // don't enter/leave twice
+            return
+        }
+        input enabled = b
+        if (b) {
+            mode leave()
+        } else {
+            mode enter()
+        }
+    }
 
+    setupEvents: func {
         // works in both mode for debug
         ui input onKeyPress(Keys BACKSPACE, ||
-            level reset()
+            if(ui mode == UIMode GAME || ui mode == UIMode EDITOR) {
+                level reset()
+            }
         )
 
         // -------------------
