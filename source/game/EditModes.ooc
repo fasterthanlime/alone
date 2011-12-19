@@ -178,6 +178,23 @@ Droppable: class {
 
 }
 
+DecorDroppable: class extends Droppable {
+
+    init: func (=mode) {
+
+    }
+
+    drop: func {
+        textInput(mode editor, "Drop custom SVG", "assets/svg/", |response| 
+            sprite := SvgSprite new(vec2(0), 1.0, response)
+            mode level bgSprites add(sprite)
+        )
+    }
+
+    getName: func -> String { "decor" }
+
+}
+
 PlatformDroppable: class extends Droppable {
 
     plat: Platform
@@ -381,6 +398,8 @@ DropMode: class extends EditMode {
         // TODO: read this from files instead
         droppables add(StartPoint new(this))
         droppables add(VacuumDroppable new(this))
+        droppables add(DecorDroppable new(this))
+        droppables add(PlatformDroppable new(this, "transparent"))
         droppables add(PlatformDroppable new(this, "metal"))
         droppables add(PlatformDroppable new(this, "wood"))
         droppables add(PlatformDroppable new(this, "glass"))

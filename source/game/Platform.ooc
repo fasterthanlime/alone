@@ -24,10 +24,19 @@ Platform: class extends Actor {
         bb color = vec3(1.0, 0.0, 1.0)
         // level sprites add(bb)
 
-        mainSprite = PngSprite new(pos, "assets/png/platforms/%s.png" format(kind))
-        mainSprite scale = vec2(0.51, 0.51)
-        mainSprite offset = vec2(-width / 2, -height / 2)
-        level sprites add(mainSprite)
+        if (kind == "transparent") {
+            rect := RectSprite new(pos)
+            rect size = vec2(width, height)
+            rect color = vec3(0.8, 0.8, 0.8)
+            rect alpha = 0.6
+            mainSprite = rect
+            level debugSprites add(mainSprite)
+        } else {
+            mainSprite = PngSprite new(pos, "assets/png/platforms/%s.png" format(kind))
+            mainSprite scale = vec2(0.51, 0.51)
+            mainSprite offset = vec2(-width / 2, -height / 2)
+            level sprites add(mainSprite)
+        }
 
         box = Box new(bb)
         level collideables add(box)
