@@ -70,7 +70,7 @@ MainUI: class {
 
     setupEvents: func {
         input onKeyPress(Keys F12, ||
-            mode = match (mode) {
+            this mode = match (this mode) {
                 case UIMode EDITOR =>
                     level editor setEnabled(false)
                     UIMode GAME
@@ -86,6 +86,8 @@ MainUI: class {
     hitsNumberSprite: LabelSprite
     levelNameSprite: LabelSprite
     modeSprite: LabelSprite
+
+    bloodScreen: ImageSprite
 
     createUIParts: func {
         // create hud
@@ -124,6 +126,10 @@ MainUI: class {
         hitsNumberSprite centered = true
         hud add(hitsNumberSprite)
 
+        // create blood screen
+        bloodScreen = ImageSprite new(vec2(0, 0), "assets/svg/bloodScreen.svg")
+        bloodScreen alpha = 0.7
+
         // create game over screen
         gameoverUI = GroupSprite new()
 
@@ -143,6 +149,7 @@ MainUI: class {
         // reset all signal handlers
         input disconnect()
         input = Input new(this)
+        setupEvents()
     }
 
     run: func {
@@ -204,10 +211,7 @@ MainUI: class {
             cr paintWithAlpha(1.0 - level hero life / 100.0)
 
             if (level hero bloody) {
-                cr rectangle(0, 0, width, height)
-                cr clip()
-                cr setSourceRGB(1.0, 0.1, 0.1)
-                cr paintWithAlpha(0.7)
+                bloodScreen draw(cr)
             }
         }
     }
