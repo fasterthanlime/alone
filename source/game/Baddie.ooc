@@ -96,7 +96,7 @@ Baddie: class extends Actor {
             case BaddieState CMON =>
                 motion = diff mul(3.0)
             case BaddieState GTFO =>
-                alpha = 0.2
+                alpha = 0.1
                 motion = diff mul(-1)
             case BaddieState WTF =>
                 motion = vec2(Random randInt(-200, 200), Random randInt(-200, 200))
@@ -107,6 +107,7 @@ Baddie: class extends Actor {
                 state = BaddieState CMON 
                 level collides?(box, |bang|
                     state = BaddieState WTF
+                    motion = bang dir mul(bang depth)
                 )
                 gtfoCounter = 120
             } else if (diff norm() < 200.0) {
