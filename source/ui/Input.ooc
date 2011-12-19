@@ -29,6 +29,12 @@ MouseEvent: class extends Event {
 
 }
 
+MouseMotion: class extends MouseEvent {
+
+    init: super func
+
+}
+
 /*
  * Mouse button pressed (!= mouse click)
  */
@@ -121,11 +127,25 @@ Proxy: abstract class {
         )
     }
 
+    onMouseDrag: func (which: UInt, cb: Func) {
+        onEvent(|ev|
+            match (ev) {
+                case mm: MouseMotion =>
+                    if(isPressed(which)) {
+                        // it's a drag!
+                        cb()
+                    }
+            }
+        )
+    }
+
     /**
      * Return the state of a key (true = pressed,
      * false = released) at any time.
      */
     isPressed: abstract func (keyval: Int) -> Bool
+
+    isButtonPressed: abstract func (button: Int) -> Bool
 
     grab: func (l: Listener) {
         _grab = l
@@ -172,6 +192,10 @@ SubProxy: class extends Proxy {
         parent isPressed(keyval)
     }
 
+    isButtonPressed: func (button: Int) -> Bool {
+        parent isButtonPressed(button)
+    }
+
     grab: func (l: Listener) {
         parent grab(l)
     }
@@ -189,6 +213,9 @@ Input: class extends Proxy {
     MAX_KEY := static 65536
     keyState: Bool*
 
+    MAX_BUTTON := static 6
+    buttonState: Bool*
+
     debug := true
 
     ui: MainUI
@@ -199,6 +226,8 @@ Input: class extends Proxy {
     init: func (=ui) {
         win = ui win
         keyState = gc_malloc(Bool size * MAX_KEY)
+        buttonState = gc_malloc(Bool size * MAX_BUTTON)
+
         _connectEvents()
 
         logger info("Input system initialized")
@@ -211,6 +240,13 @@ Input: class extends Proxy {
         keyState[keyval]
     }
 
+    isButtonPressed: func (button: Int) -> Bool {
+        if (button >= MAX_BUTTON) {
+            return false
+        }
+        buttonState[button]
+    }
+
     // --------------------------------
     // private functions below
     // --------------------------------
@@ -221,10 +257,11 @@ Input: class extends Proxy {
         win addEvents(GdkEventMask BUTTON_PRESS_MASK)
 
         // register all event listeners
-        win connectKeyEvent("key-press-event",     |ev| _keyPressed (ev))
-        win connectKeyEvent("key-release-event",   |ev| _keyReleased(ev))
-        win connectKeyEvent("motion-notify-event", |ev| _mouseMoved(ev))
-        win connectKeyEvent("button-press-event",  |ev| _mousePressed(ev))
+        win connectKeyEvent("key-press-event",       |ev| _keyPressed (ev))
+        win connectKeyEvent("key-release-event",     |ev| _keyReleased(ev))
+        win connectKeyEvent("motion-notify-event",   |ev| _mouseMoved(ev))
+        win connectKeyEvent("button-press-event",    |ev| _mousePressed(ev))
+        win connectKeyEvent("button-release-event",  |ev| _mouseReleased(ev))
     }
 
     _keyPressed: func (ev: EventKey*) {
@@ -246,11 +283,19 @@ Input: class extends Proxy {
 
     _mouseMoved: func (ev: EventMotion*) {
         (mousepos x, mousepos y) = (ev@ x, ev@ y)
+        _notifyListeners(MouseMotion new(mousepos))
     }
 
     _mousePressed: func (ev: EventButton*) {
         logger debug("Mouse pressed at %s" format(mousepos _))
+        buttonState[ev@ button] = true
         _notifyListeners(MousePress new(mousepos, ev@ button))
+    }
+
+    _mouseReleased: func (ev: EventButton*) {
+        logger debug("Mouse released at %s" format(mousepos _))
+        buttonState[ev@ button] = false
+        _notifyListeners(MouseRelease new(mousepos, ev@ button))
     }
 
 }
