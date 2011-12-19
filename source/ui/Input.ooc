@@ -256,7 +256,7 @@ Input: class extends Proxy {
     MAX_BUTTON := static 6
     buttonState: Bool*
 
-    debug := true
+    debug := false
 
     ui: MainUI
     win: Window

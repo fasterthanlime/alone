@@ -21,7 +21,9 @@ import structs/[ArrayList]
 import zombieconfig
 
 UIMode: enum {
+    MENU,
     GAME,
+    GAME_OVER,
     EDITOR
 }
 
@@ -38,6 +40,8 @@ MainUI: class {
     input: Input
 
     translation := vec2(0, 0)
+
+    gameoverUI: GroupSprite
 
     mode := UIMode GAME
 
@@ -58,6 +62,24 @@ MainUI: class {
         input = Input new(this)
 
         win showAll()
+
+        createUIParts()
+    }
+
+    createUIParts: func {
+        // create game over screen
+        gameoverUI = GroupSprite new()
+
+        gameoverBg := RectSprite new(vec2(width / 2, height / 2))
+        gameoverBg size set!(width, height)
+        gameoverBg color = vec3(0.0, 0.0, 0.0)
+        gameoverUI add(gameoverBg)
+
+        gameoverText := LabelSprite new(vec2(width / 2, height / 2), "GAME OVER")
+        gameoverText color = vec3(1.0, 1.0, 1.0)
+        gameoverText centered = true
+        gameoverText fontSize = 80.0
+        gameoverUI add(gameoverText)
     }
 
     reset: func {
@@ -83,25 +105,29 @@ MainUI: class {
     }
 
     paint: func (cr: Context) {
-        cr translate(translation x, translation y)
-        background(cr)
+        if (mode == UIMode GAME || mode == UIMode EDITOR) {
+            cr translate(translation x, translation y)
+            background(cr)
 
-        // draw level
-        if (level) {
-            level bgSprites each(|sprite| sprite draw(cr))
-            level sprites each(|sprite| sprite draw(cr))
-            level fgSprites each(|sprite| sprite draw(cr))
+            // draw level
+            if (level) {
+                level bgSprites each(|sprite| sprite draw(cr))
+                level sprites each(|sprite| sprite draw(cr))
+                level fgSprites each(|sprite| sprite draw(cr))
 
-            if(debug || debugRender || mode == UIMode EDITOR) {
-                level debugSprites each(|sprite| sprite draw(cr))
+                if(debug || debugRender || mode == UIMode EDITOR) {
+                    level debugSprites each(|sprite| sprite draw(cr))
+                }
+            } else {
+                logger error("No level set!")
             }
-        } else {
-            logger error("No level set!")
-        }
 
-        // now draw the UI
-        cr translate(-translation x, -translation y)
-        drawUI(cr)
+            // now draw the UI
+            cr translate(-translation x, -translation y)
+            drawUI(cr)
+        } else if (mode == UIMode GAME_OVER) {
+            gameoverUI draw(cr)
+        }
     }
 
     drawUI: func (cr: Context) {

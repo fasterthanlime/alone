@@ -98,6 +98,10 @@ Level: class {
         editor update(delta)
 
         engine ui redraw()
+
+        if (hero life <= 0) {
+            engine ui mode = UIMode GAME_OVER
+        }
     }
 
     bind2: func (src, dst: Vec2) {

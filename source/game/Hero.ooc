@@ -62,7 +62,7 @@ Hero: class extends Actor {
     }
 
     update: func (delta: Float) {
-        logger info("Position = %s" format(body pos _)) 
+        // logger info("Position = %s" format(body pos _)) 
 
         if (input isPressed(Keys LEFT)) {
             body speed interpolateX!(-speed, speedAlpha)
