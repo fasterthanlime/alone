@@ -26,6 +26,10 @@ Vec2: class {
         mul(1.0 / norm())
     }
 
+    angle: func -> Double {
+        atan2(y, x)
+    }
+
     mul: func (f: Float) -> This {
         new(x * f, y * f)
     }

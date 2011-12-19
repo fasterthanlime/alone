@@ -87,6 +87,22 @@ GroupSprite: class extends Sprite {
 
 }
 
+RotatedSprite: class extends Sprite {
+
+    sub: Sprite
+    angle := 0.0
+    
+    init: func (=sub) {
+        super(vec2(0))     
+    }
+
+    paint: func (cr: Context) {
+        cr rotate(angle)
+        sub paint(cr)
+    }
+
+}
+
 /**
  * A rectangle, initially a 1x1 square
  */
