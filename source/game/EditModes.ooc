@@ -134,6 +134,13 @@ IdleMode: class extends EditMode {
             )
         )
 
+        input onKeyPress(Keys F3, ||
+            // F3 = rename
+            textInput(editor, "Level name", editor level name, |response|
+                editor level name = response
+            )
+        )
+
         input onKeyPress(Keys E, ||
             editor change(editor DROP)
         )
@@ -458,6 +465,9 @@ DropMode: class extends EditMode {
         droppables add(SwarmDroppable new(this))
         droppables add(DecorDroppable new(this))
         droppables add(PlatformDroppable new(this, "transparent"))
+        droppables add(PlatformDroppable new(this, "transparent-small"))
+        droppables add(PlatformDroppable new(this, "transparent-vertical"))
+        droppables add(PlatformDroppable new(this, "transparent-small-vertical"))
         droppables add(PlatformDroppable new(this, "metal"))
         droppables add(PlatformDroppable new(this, "wood"))
         droppables add(PlatformDroppable new(this, "glass"))

@@ -4,19 +4,12 @@
     "objects": [
         {
             "type": "background",
-            "path": "assets/png/egypt.png"
+            "path": "assets/svg/fond1.svg"
         },
 
         {
             "type": "hero",
             "pos": [ 0.0, 0.0 ]
-        },
-
-        {
-            "type": "swarm",
-            "center": [ 400.0, 50.0 ],
-            "population": 8,
-            "radius": 100.0
         }
     ]
 }

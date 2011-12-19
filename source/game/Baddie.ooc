@@ -5,6 +5,11 @@ import Engine, Level, Hero, Collision, Vacuum
 
 import math/[Vec2, Vec3, Random]
 
+abs: func (d: Double) -> Double {
+    if (d < 0.0) return -d
+    d
+}
+
 BaddieState: enum {
     CMON,
     GTFO,
@@ -33,12 +38,14 @@ Baddie: class extends Actor {
     collideCounter := 0
     collideDuration := 15
 
-    scale := 0.5
+    scale := 0.7
 
     state := BaddieState CMON
     attractor: Vacuum
 
     gtfoCounter := -1
+
+    dead := false
 
     init: func (=level) {
         hero = level hero
@@ -48,13 +55,15 @@ Baddie: class extends Actor {
         body gravity = 0.0
 
         mainSprite = SvgSprite new(body pos, 0.1, "assets/svg/baddies/baddie2_Full.svg")
-        mainSprite scale = vec2(0.5, 0.5)
-        mainSprite offset = vec2(-40, -40)
+        mainSprite scale = vec2(scale, scale)
+        mainSprite offset = vec2(-70, -50)
         level fgSprites add(mainSprite)
 
         bb = RectSprite new(body pos)
-        bb size = vec2(40, 40)
+        bb size = vec2(70, 70)
+        //level fgSprites add(bb)
         box = Box new(bb)
+        box actor = this
         level collideables add(box)
     }
 
@@ -68,25 +77,45 @@ Baddie: class extends Actor {
         false
     }
 
+    die: func {
+        dead = true
+        cleanup()
+        level actors remove(this)
+    }
+
     update: func (delta: Float) {
+        if (dead) return
+
         diff := hero body pos sub(body pos)
         motion := diff
         alpha := 0.2
 
+        vacuumDeath := 15.0
         vacuumInfluence := 300.0
 
         // attempt to find close vacuums
         changed := false
         level vacuums each(|vacuum|
-            dist := vacuum pos sub(body pos) norm()
-            if (dist < vacuumInfluence) {
-                changed = true
-                state = BaddieState DUI
-                attractor = vacuum
+            diff := vacuum pos sub(body pos)
+            dist := diff norm()
+
+            if (dist < vacuumDeath) {
+                die()
             }
-            targetAlpha := dist / vacuumInfluence
-            if (mainSprite alpha > targetAlpha) {
-                mainSprite alpha = targetAlpha
+
+            if (dist < vacuumInfluence) {
+                a1 := diff angle()
+                a2 := vacuum angle
+
+                if (abs(a1 - a2) < 2.0) {
+                    changed = true
+                    state = BaddieState DUI
+                    attractor = vacuum
+                    targetAlpha := dist / vacuumInfluence
+                    if (mainSprite alpha > targetAlpha) {
+                        mainSprite alpha = targetAlpha
+                    }
+                }
             }
         )
 
@@ -103,7 +132,8 @@ Baddie: class extends Actor {
         }
 
         if (!changed) {
-            if (hero body speed norm() > 3.0) {
+            mainSprite alpha = 1.0
+            if (hero body speed norm() > 2.0) {
                 state = BaddieState CMON 
                 level collides?(box, |bang|
                     state = BaddieState WTF
@@ -115,8 +145,8 @@ Baddie: class extends Actor {
                     state = BaddieState GTFO
                 } else {
                     state = BaddieState CMON
+                    gtfoCounter = gtfoCounter - 1
                 }
-                gtfoCounter = gtfoCounter - 1
             } else {
                 state = BaddieState WTF
                 gtfoCounter = 120
@@ -126,10 +156,10 @@ Baddie: class extends Actor {
         body speed interpolate!(motion normalized() mul(speed), alpha)
         if (body speed x > 3.0) {
             mainSprite scale x = scale
-            mainSprite offset x = 0
+            mainSprite offset x = -60
         } else if(body speed x < -3.0) {
             mainSprite scale x = -scale
-            mainSprite offset x = 50
+            mainSprite offset x = 60
         }
 
         body update(delta)

@@ -61,6 +61,7 @@ Level: class {
         // set hero to start position and still
         hero body pos set!(startPos)
         hero body speed set!(0, 0)
+        hero life = 100
     
         // re-spawn baddies
         swarms each(|swarm|
