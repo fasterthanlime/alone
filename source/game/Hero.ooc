@@ -83,6 +83,11 @@ Hero: class extends Actor {
 
         touchesGround = false
         bloody = false
+
+        numCollisions := 0
+        reaction := vec2(0)
+        perp := vec2(0)
+        
         level collides?(box, |bang|
             valid := true
 
@@ -102,13 +107,20 @@ Hero: class extends Actor {
             // later on
             // logger info ("Bang, dir %s, depth %.2f" format(bang dir _, bang depth))
             if (valid) {
-                body pos add!(bang dir mul(bang depth))
-                body speed project!(bang dir perp())
+                reaction add!(bang dir mul(bang depth))
+                perp add!(bang dir perp())
+                numCollisions += 1
                 if (bang dir y < - 0.5) {
                     touchesGround = true
                 }
             }
         )
+
+        if (numCollisions > 0) {
+            factor := 1.0 / numCollisions as Float
+            body pos add!(reaction mul(factor))
+            body speed project!(perp mul(factor))
+        }
 
         minAlpha := 0.2
         alphaAlpha := 0.1
