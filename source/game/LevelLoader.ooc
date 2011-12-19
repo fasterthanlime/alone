@@ -50,7 +50,7 @@ LevelLoader: class {
                     level startPos = readVec2(object, "pos")
                     logger info("Hero starting at position %s" format(level startPos _))
                 case "swarm" =>
-                    swarm := Swarm new()
+                    swarm := Swarm new(level)
                     swarm population = object get("population", Int)
                     swarm center = readVec2(object, "center")
                     swarm radius = readFloat(object, "radius")
