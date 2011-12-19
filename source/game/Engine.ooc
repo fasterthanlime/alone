@@ -30,6 +30,10 @@ Engine: class {
     }
 
     load: func (levelName: String) {
+        if (level) {
+            ui reset()
+        }
+
         loader := LevelLoader new(this)
         level = loader load(levelName)
         ui level = level

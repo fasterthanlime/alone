@@ -60,6 +60,12 @@ MainUI: class {
         win showAll()
     }
 
+    reset: func {
+        // reset all signal handlers
+        input disconnect()
+        input = Input new(this)
+    }
+
     run: func {
         Gtk main()
     }

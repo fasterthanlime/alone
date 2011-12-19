@@ -10,7 +10,7 @@
 // libs deps
 import deadlogger/Log
 import structs/[ArrayList]
-import gtk/[Widget, Window]
+import gtk/[Gtk, Widget, Window]
 import gdk/[Event]
 
 // game deps
@@ -288,11 +288,21 @@ Input: class extends Proxy {
         win addEvents(GdkEventMask BUTTON_RELEASE_MASK)
 
         // register all event listeners
-        win connectKeyEvent("key-press-event",       |ev| _keyPressed (ev))
-        win connectKeyEvent("key-release-event",     |ev| _keyReleased(ev))
-        win connectKeyEvent("motion-notify-event",   |ev| _mouseMoved(ev))
-        win connectKeyEvent("button-press-event",    |ev| _mousePressed(ev))
-        win connectKeyEvent("button-release-event",  |ev| _mouseReleased(ev))
+        id1 = win connectKeyEvent("key-press-event",       |ev| _keyPressed (ev))
+        id2 = win connectKeyEvent("key-release-event",     |ev| _keyReleased(ev))
+        id3 = win connectKeyEvent("motion-notify-event",   |ev| _mouseMoved(ev))
+        id4 = win connectKeyEvent("button-press-event",    |ev| _mousePressed(ev))
+        id5 = win connectKeyEvent("button-release-event",  |ev| _mouseReleased(ev))
+    }
+
+    id1, id2, id3, id4, id5: GULong // handler ids
+
+    disconnect: func {
+        win disconnect(id1)
+        win disconnect(id2)
+        win disconnect(id3)
+        win disconnect(id4)
+        win disconnect(id5)
     }
 
     _keyPressed: func (ev: EventKey*) {

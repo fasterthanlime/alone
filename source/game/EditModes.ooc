@@ -120,9 +120,8 @@ IdleMode: class extends EditMode {
         input onKeyPress(Keys F1, ||
             // F1 = load
             textInput(editor, "Load level", editor levelName, |response|
-                editor levelName = response
-                loader := LevelLoader new(editor level engine)
-                // level := loader load(levelName)
+                "Trigger reload of %s" printfln(response)
+                editor level engine load(response)
             )
         )
 
@@ -310,6 +309,8 @@ DropMode: class extends EditMode {
             change(index - 1)
         )
 
+        input enabled = false
+
         initDroppables()
     }
 
@@ -332,7 +333,6 @@ DropMode: class extends EditMode {
         droppables add(PlatformDroppable new(this, "glass"))
 
         droppable = droppables[0]
-        droppable enter()
     }
 
     update: func (delta: Float) {
