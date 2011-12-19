@@ -8,7 +8,7 @@ import math/[Vec2, Vec3, Random]
 Vacuum: class extends Actor {
 
     bb: RectSprite
-    mainSprite: Sprite
+    mainSprite: RotatedSprite
     box: Box
 
     pos: Vec2
@@ -18,6 +18,7 @@ Vacuum: class extends Actor {
         svgSprite := SvgSprite new(pos, "assets/svg/Vacuum.svg")
         svgSprite offset = vec2(-svgSprite width / 2, -svgSprite height / 2)
         mainSprite = RotatedSprite new(svgSprite)
+        mainSprite angle = angle
         level sprites add(mainSprite)
 
         // bb = RectSprite new(pos)
