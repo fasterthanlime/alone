@@ -127,6 +127,10 @@ MainUI: class {
         cr moveTo(20, 30)
         cr showText("Level: " + level name)
 
+        // level title
+        cr moveTo(350, 30)
+        cr showText("Health: %d%%" format(level hero life))
+
         // mode
         cr moveTo(20, height - barHeight + 30)
         cr showText("Mode: %s" format(match mode {
@@ -135,7 +139,22 @@ MainUI: class {
         }))
 
         // draw editor UI, if any
-        level editor paint(cr)
+        if (mode == UIMode EDITOR) {
+            level editor paint(cr)
+        } else {
+            // the less life we have, the less we see
+            cr rectangle(0, 0, width, height)
+            cr clip()
+            cr setSourceRGB(0.0, 0.0, 0.0)
+            cr paintWithAlpha(1.0 - level hero life / 100.0)
+
+            if (level hero bloody) {
+                cr rectangle(0, 0, width, height)
+                cr clip()
+                cr setSourceRGB(1.0, 0.1, 0.1)
+                cr paintWithAlpha(0.7)
+            }
+        }
     }
 
     background: func (cr: Context) {

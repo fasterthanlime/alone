@@ -2,7 +2,7 @@ use deadlogger
 
 // game deps
 import ui/[Sprite, MainUI, Input]
-import Engine, Level, Collision
+import Engine, Level, Collision, Baddie
 
 import math/[Vec2, Vec3]
 
@@ -33,6 +33,7 @@ Hero: class extends Actor {
     body: Body
     direction := 1.0 // 1 = right, -1 = left
 
+    bloody := false
 
     init: func (=level) {
         ui = level engine ui
@@ -81,13 +82,32 @@ Hero: class extends Actor {
         body update(delta)
 
         touchesGround = false
+        bloody = false
         level collides?(box, |bang|
+            valid := true
+
+            if(bang other && bang other actor) {
+                match (bang other actor) {
+                    case baddie: Baddie =>
+                        angle := body pos sub(baddie body pos) angle()
+                        if (angle > 0.0) {
+                            life -= 1
+                            bloody = true
+                            valid = false
+                        }
+                }
+            }
+
             // we might need multi-constraint resolution
             // later on
             // logger info ("Bang, dir %s, depth %.2f" format(bang dir _, bang depth))
-            body pos add!(bang dir mul(bang depth))
-            body speed project!(bang dir perp())
-            touchesGround = true
+            if (valid) {
+                body pos add!(bang dir mul(bang depth))
+                body speed project!(bang dir perp())
+                if (bang dir y < - 0.5) {
+                    touchesGround = true
+                }
+            }
         )
 
         minAlpha := 0.2

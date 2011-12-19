@@ -20,21 +20,22 @@ Platform: class extends Actor {
     init: func (=level, =pos, =kind) {
         bb = RectSprite new(pos)
         bb filled = false
-        bb size = vec2(150, 40)
+        bb size = vec2(width, height)
         bb color = vec3(1.0, 0.0, 1.0)
         // level sprites add(bb)
 
         vertical := kind endsWith?("vertical")
+        small := kind contains?("-small")
 
         if (kind startsWith?("transparent")) {
-
+            if (small) width = width / 2
             rect := RectSprite new(pos)
             if (vertical) {
                 rect size = vec2(height, width)
-                bb size = vec2(40, 150)
+                bb size   = vec2(height, width)
             } else {
                 rect size = vec2(width, height)
-                bb size = vec2(150, 40)
+                bb size   = vec2(width, height)
             }
             rect color = vec3(0.8, 0.8, 0.8)
             rect alpha = 0.6
