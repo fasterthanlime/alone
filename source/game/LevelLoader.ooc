@@ -33,6 +33,9 @@ LevelLoader: class {
         if(json contains?("totalHits")) {
             level totalHitsNumber = json get("totalHits", Int)
         }
+        if(json contains?("endPos")) {
+            level endPos set!(readVec2(json, "endPos"))
+        }
 
         logger debug("Level '%s', by '%s'" format(level name, level author))
 
@@ -40,7 +43,6 @@ LevelLoader: class {
         for(i in 0..objects size) {
             object := objects get(i, HashBag)
             type := object get("type", String)
-            logger debug("Got an object of type '%s'" format(type))
 
             match type {
                 case "background" =>

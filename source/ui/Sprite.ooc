@@ -41,7 +41,6 @@ Sprite: class {
         cr setSourceRGBA(color x, color y, color z, alpha)
 
         paint(cr)
-
         cr restore()
     }
 
@@ -202,6 +201,7 @@ LabelSprite: class extends Sprite {
     init: func (=pos, =text) { }
 
     paint: func (cr: Context) {
+        cr newSubPath()
         cr selectFontFace(family, CairoFontSlant NORMAL, CairoFontWeight NORMAL)
         cr setFontSize(fontSize)
 
@@ -210,6 +210,7 @@ LabelSprite: class extends Sprite {
             cr textExtents(text, extents&)
             cr translate (-extents width / 2, extents height / 2)
         }
+
         cr showText(text)
     }
 

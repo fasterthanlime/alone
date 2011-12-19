@@ -28,6 +28,7 @@ LevelSaver: class {
                 "name", level name,
                 "author", level author,
                 "totalHits", level totalHitsNumber,
+                "endPos", toArray(level endPos),
                 "objects", objects(make, level)
             )
         )

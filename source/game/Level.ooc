@@ -28,6 +28,7 @@ Level: class {
     backgroundPath := ""
 
     startPos := vec2(0)
+    endPos := vec2(-100000, -100000)
 
     // different passes
     bgSprites := ArrayList<Sprite> new()
