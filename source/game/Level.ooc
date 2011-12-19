@@ -88,6 +88,9 @@ Level: class {
                 actors add(baddie)
             )
         )
+
+        // display friendly message
+        engine ui notify("Good luck, soldier!")    
     }
 
     update: func (delta: Float) {

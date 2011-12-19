@@ -87,6 +87,11 @@ MainUI: class {
     levelNameSprite: LabelSprite
     modeSprite: LabelSprite
 
+    notifScreen: GroupSprite
+    notifTextSprite: LabelSprite
+
+    notifyCounter := 0
+
     bloodScreen: ImageSprite
 
     createUIParts: func {
@@ -134,6 +139,20 @@ MainUI: class {
         bloodScreen = ImageSprite new(vec2(0, 0), "assets/svg/bloodScreen.svg")
         bloodScreen scale set!(width / 1920.0, height / 1080.0)
 
+        // create notifScreen
+        notifScreen = GroupSprite new()
+        notifBg := RectSprite new(vec2(width / 2, 200))
+        notifBg color = vec3(0.0, 0.0, 0.0)
+        notifBg alpha = 0.5
+        notifBg size set!(500, 200)
+        notifScreen add(notifBg)
+
+        notifTextSprite = LabelSprite new(vec2(width / 2, 200), "Notification!")
+        notifTextSprite color = vec3(1.0, 1.0, 1.0)
+        notifTextSprite centered = true
+        notifTextSprite fontSize = 40.0
+        notifScreen add(notifTextSprite)
+
         // create game over screen
         gameoverUI = GroupSprite new()
 
@@ -147,6 +166,11 @@ MainUI: class {
         gameoverText centered = true
         gameoverText fontSize = 80.0
         gameoverUI add(gameoverText)
+    }
+    
+    notify: func (msg: String, duration := 100) {
+        notifTextSprite text = msg
+        notifyCounter = duration
     }
 
     reset: func {
@@ -200,6 +224,11 @@ MainUI: class {
 
     drawUI: func (cr: Context) {
         hud draw(cr)
+
+        if(notifyCounter > 0) {
+            notifyCounter -= 1
+            notifScreen draw(cr)
+        }
 
         healthPercentageSprite text = "%d%%" format(level hero life)
         hitsNumberSprite text = "%d/%d" format(level hitsNumber, level totalHitsNumber)
