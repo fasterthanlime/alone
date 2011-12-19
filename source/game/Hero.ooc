@@ -9,11 +9,18 @@ import math/[Vec2, Vec3]
 // libs deps
 import deadlogger/Log
 
+HeroState: enum {
+    NORMAL
+    MR_FAHRENHEIT
+}
+
 Hero: class extends Actor {
 
     logger := static Log getLogger(This name)
     mainSprite : Sprite
     reflectionSprite : Sprite
+
+    state := HeroState NORMAL
 
     ui: MainUI
     input: Input
@@ -62,8 +69,27 @@ Hero: class extends Actor {
     }
 
     update: func (delta: Float) {
-        // logger info("Position = %s" format(body pos _)) 
+        match (state) {
+            case HeroState NORMAL        => normalUpdate(delta)
+            case HeroState MR_FAHRENHEIT => rocketUpdate(delta)
+        }
 
+        bb pos              = body pos
+        hb pos              = body pos
+        mainSprite pos      = body pos
+        mainSprite offset x = direction * bb size x / 2
+        mainSprite scale  x = - direction * scale
+    }
+
+    rocketUpdate: func (delta: Float) {
+        body speed x = 0
+        body speed y -= 3
+        body update(delta)
+
+        level endSprite pos set!(body pos)
+    }
+
+    normalUpdate: func (delta: Float) {
         if (input isPressed(Keys LEFT)) {
             body speed interpolateX!(-speed, speedAlpha)
             direction = -1.0
@@ -130,11 +156,6 @@ Hero: class extends Actor {
             mainSprite alpha = 1.0
         }
 
-        bb pos              = body pos
-        hb pos              = body pos
-        mainSprite pos      = body pos
-        mainSprite offset x = direction * bb size x / 2
-        mainSprite scale  x = - direction * scale
     }
 
 }
