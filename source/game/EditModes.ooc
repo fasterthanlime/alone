@@ -195,16 +195,21 @@ DecorDroppable: class extends Droppable {
         input = mode input sub()
         decor = Decor new(mode level, "assets/svg/sign.svg", vec2(0), 1.0)
         decor mainSprite alpha = 0.6
+        decor mainSprite visible = false
 
         // feinte du loup des bois
         mode level bgSprites remove(decor mainSprite)
         mode level debugSprites add(decor mainSprite)
 
-        input onKeyRelease(Keys ENTER, ||
+        // F1 = load decor
+        input onKeyRelease(Keys F1, ||
             this // silly ooc workaround number two!
             textInput(mode editor, "Choose decor SVG path", "assets/svg/", |response| 
+                mode level debugSprites remove(decor mainSprite)
                 decor changeSprite(response)
                 decor mainSprite alpha = 0.6
+                mode level bgSprites remove(decor mainSprite)
+                mode level debugSprites add(decor mainSprite)
             )
         )
     }

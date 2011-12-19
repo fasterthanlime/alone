@@ -23,7 +23,9 @@ Vec2: class {
     }
 
     normalized: func -> This {
-        mul(1.0 / norm())
+        n := norm()
+        if (n == 0) return this // better 0 than NaN...
+        mul(1.0 / n)
     }
 
     angle: func -> Double {
