@@ -85,28 +85,14 @@ Listener: class {
 
 }
 
-Input: class {
+Proxy: abstract class {
 
     logger := static Log getLogger(This name)
+
     listeners := ArrayList<Listener> new()
+    _grab: Listener
 
-    MAX_KEY := static 65536
-    keyState: Bool*
-
-    debug := true
-
-    ui: MainUI
-    win: Window
-
-    mousepos := vec2(0.0, 0.0)
-
-    init: func (=ui) {
-        win = ui win
-        keyState = gc_malloc(Bool size * MAX_KEY)
-        _connectEvents()
-
-        logger info("Input system initialized")
-    }
+    enabled := true
 
     /**
      * Register for an event listener. You can
@@ -139,6 +125,81 @@ Input: class {
      * Return the state of a key (true = pressed,
      * false = released) at any time.
      */
+    isPressed: abstract func (keyval: Int) -> Bool
+
+    grab: func (l: Listener) {
+        _grab = l
+    }
+
+    ungrab: func (l: Listener) {
+        if(l != _grab) {
+            logger warn("Ungrabbing %p but it was %p who was grabbed" format(l, _grab))
+        }
+        _grab = null
+    }
+
+    //---------------
+    // private stuff
+    //---------------
+
+    _notifyListeners: func (ev: Event) {
+        if (!enabled) return
+
+        if (_grab) {
+            _grab cb(ev)
+        } else {
+            listeners each(|l| l cb(ev))
+        }
+    }
+
+}
+
+SubProxy: class extends Proxy {
+
+    parent: Proxy
+
+    init: func (=parent) {
+        parent onEvent(|ev|
+            _notifyListeners(ev)
+        )
+    }
+
+    isPressed: func (keyval: Int) -> Bool {
+        parent isPressed(keyval)
+    }
+
+    grab: func (l: Listener) {
+        parent grab(l)
+    }
+
+    ungrab: func (l: Listener) {
+        parent ungrab(l)
+    }
+
+}
+
+Input: class extends Proxy {
+
+    logger := static Log getLogger(This name)
+
+    MAX_KEY := static 65536
+    keyState: Bool*
+
+    debug := true
+
+    ui: MainUI
+    win: Window
+
+    mousepos := vec2(0.0, 0.0)
+
+    init: func (=ui) {
+        win = ui win
+        keyState = gc_malloc(Bool size * MAX_KEY)
+        _connectEvents()
+
+        logger info("Input system initialized")
+    }
+
     isPressed: func (keyval: Int) -> Bool {
         if (keyval >= MAX_KEY) {
             return false
@@ -186,10 +247,6 @@ Input: class {
     _mousePressed: func (ev: EventButton*) {
         logger debug("Mouse pressed at %s" format(mousepos _))
         _notifyListeners(MousePress new(mousepos, ev@ button))
-    }
-
-    _notifyListeners: func (ev: Event) {
-        listeners each(|l| l cb(ev))
     }
 
 }
