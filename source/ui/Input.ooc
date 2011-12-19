@@ -138,6 +138,10 @@ Proxy: abstract class {
         _grab = null
     }
 
+    sub: func -> SubProxy {
+        SubProxy new(this)
+    }
+
     //---------------
     // private stuff
     //---------------

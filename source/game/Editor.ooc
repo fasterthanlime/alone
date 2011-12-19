@@ -20,7 +20,6 @@ Editor: class extends Actor {
 
     ui: MainUI
     level: Level
-    input: Input
 
     cameraSpeed := 25.0
 
@@ -31,8 +30,10 @@ Editor: class extends Actor {
     // the current mode
     mode: EditMode
 
+    input: Proxy
+
     init: func (=ui, =level) {
-        input = ui input
+        input = ui input sub()
 
         setupEvents()
         setupEditModes()
@@ -47,36 +48,38 @@ Editor: class extends Actor {
 
     setupEvents: func {
         // mode swap
-        input onKeyPress(Keys F12, ||
+        ui input onKeyPress(Keys F12, ||
             ui mode = match (ui mode) {
                 case UIMode EDITOR =>
+                    input enabled = false
                     mode leave()
                     UIMode GAME
                 case UIMode GAME   =>
+                    input enabled = true
                     mode enter()
                     UIMode EDITOR
             }
         )
 
+        // works in both mode for debug
+        ui input onKeyPress(Keys BACKSPACE, ||
+            level reset()
+        )
+
+        // -------------------
+        // STUFF THAT ONLY WORKS IN EDIT MODE
+        // -------------------
+
         input onKeyPress(Keys F2, ||
-            if (ui mode != UIMode EDITOR) return
-    
             // F2 = save
             saver := LevelSaver new()
             saver save(level, "/tmp/level.json")
         )
 
-        input onKeyPress(Keys BACKSPACE, ||
-            // works in both mode for debug
-
-            level reset()
-        )
-
         input onKeyPress(Keys E, ||
-            if (ui mode != UIMode EDITOR) return
-
             change(DROP)
         )
+
     }
 
     moveCamera: func (x, y: Float) {
@@ -86,11 +89,7 @@ Editor: class extends Actor {
     paint: func (cr: Context) {
         if (ui mode != UIMode EDITOR) return
 
-        cr moveTo(200, 200)
-        cr setFontSize(80.0)
         cr setSourceRGB(1.0, 0.3, 0.3)
-        cr showText("EDITOR, BITCHES!")
-
         cr moveTo(100, 100)
         cr setFontSize(40.0)
         cr showText("edit mode: %s" format(mode name))
