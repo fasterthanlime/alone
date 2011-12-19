@@ -24,6 +24,8 @@ Hero: class extends Actor {
     speedAlpha := 0.8
     scale := 1.0
 
+    life := 100
+
     hb : RectSprite // hit box
     bb : RectSprite // bounding box
     box: Box
@@ -54,6 +56,7 @@ Hero: class extends Actor {
         level sprites add(mainSprite)
 
         box = Box new(bb)
+        box actor = this
         level collideables add(box)
     }
 

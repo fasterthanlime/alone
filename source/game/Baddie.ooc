@@ -63,6 +63,7 @@ Baddie: class extends Actor {
         bb size = vec2(70, 70)
         //level fgSprites add(bb)
         box = Box new(bb)
+        box actor = this
         level collideables add(box)
     }
 
