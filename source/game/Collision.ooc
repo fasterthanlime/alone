@@ -26,20 +26,21 @@ Collideable: class {
 Box: class extends Collideable {
 
     rect: RectSprite
+    vertical := false
 
     init: func (=rect) { }
 
     test: func (c: Collideable) -> Bang {
         match (c) {
             case b: Box =>
-                bang := testRect(b rect)
+                bang := testRect(b rect, b vertical)
                 if(bang) bang other = c
                 bang
             case => null
         }
     }
 
-    testRect: func (rect2: RectSprite) -> Bang {
+    testRect: func (rect2: RectSprite, otherVertical: Bool) -> Bang {
         rect1 := rect
 
         x1 := rect1 pos x
@@ -66,40 +67,41 @@ Box: class extends Collideable {
         b := Bang new()
         b depth = 10000000000.0
 
-    
-        if (x1 < x2 && maxx1 > minx2) {
-            depth := maxx1 - minx2
-            if (depth < b depth) {
-                bangs = true
-                b depth = depth
-                (b dir x, b dir y) = ( 1,  0)
+        if (otherVertical) {
+            if (x1 < x2 && maxx1 > minx2) {
+                depth := maxx1 - minx2
+                if (depth < b depth) {
+                    bangs = true
+                    b depth = depth
+                    (b dir x, b dir y) = (-1,  0)
+                }
             }
-        }
 
-        if (x2 < x1 && maxx2 > minx1) {
-            depth := maxx2 - minx1
-            if (depth < b depth) {
-                bangs = true
-                b depth = depth
-                (b dir x, b dir y) = (-1,  0)
+            if (x2 < x1 && maxx2 > minx1) {
+                depth := maxx2 - minx1
+                if (depth < b depth) {
+                    bangs = true
+                    b depth = depth
+                    (b dir x, b dir y) = ( 1,  0)
+                }
             }
-        }
-    
-        if (y1 < y2 && maxy1 > miny2) {
-            depth := maxy1 - miny2
-            if (depth < b depth) {
-                bangs = true
-                b depth = depth
-                (b dir x, b dir y) = ( 0, -1)
+        } else {
+            if (y1 < y2 && maxy1 > miny2) {
+                depth := maxy1 - miny2
+                if (depth < b depth) {
+                    bangs = true
+                    b depth = depth
+                    (b dir x, b dir y) = ( 0, -1)
+                }
             }
-        }
 
-        if (y2 < y1 && maxy2 > miny1) {
-            depth := maxy2 - miny1
-            if (depth < b depth) {
-                bangs = true
-                b depth = depth
-                (b dir x, b dir y) = ( 0,  1)
+            if (y2 < y1 && maxy2 > miny1) {
+                depth := maxy2 - miny1
+                if (depth < b depth) {
+                    bangs = true
+                    b depth = depth
+                    (b dir x, b dir y) = ( 0,  1)
+                }
             }
         }
 

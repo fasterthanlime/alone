@@ -465,6 +465,7 @@ DropMode: class extends EditMode {
         droppables add(SwarmDroppable new(this))
         droppables add(DecorDroppable new(this))
         droppables add(PlatformDroppable new(this, "transparent"))
+        droppables add(PlatformDroppable new(this, "transparent-vertical"))
         droppables add(PlatformDroppable new(this, "metal"))
         droppables add(PlatformDroppable new(this, "wood"))
         droppables add(PlatformDroppable new(this, "glass"))
