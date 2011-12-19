@@ -1,13 +1,39 @@
 
 // game deps
 import ui/MainUI
-// TODO: keyboard input, etc.
+import game/[Level, LevelLoader]
+
+// libs deps
+import gtk/Gtk // for timeouts
+use zombieconfig
+import zombieconfig
 
 Engine: class {
 
-   ui: MainUI
+    ui: MainUI
+    level: Level
 
-   init: func(=ui) { }
+    FPS := 30.0 // let's target 30FPS
+
+    init: func(config: ZombieConfig) {
+        ui = MainUI new(config)
+        load(config["startLevel"])
+
+        // doing a fixed delta for now
+        delta := 1000.0 / FPS
+        Gtk addTimeout(delta, ||
+            level update(1.0)
+            true // so the callback gets ran again
+        )
+
+        ui run()
+    }
+
+    load: func (levelName: String) {
+        loader := LevelLoader new(this)
+        level = loader load(levelName)
+        ui level = level
+    }
 
 }
 

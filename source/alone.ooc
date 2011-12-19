@@ -21,17 +21,6 @@ main: func {
         base("startLevel", "level1")
     )
 
-    // create main ui, initialize engine
-    ui := MainUI new(config)
-    engine := Engine new(ui)
-
-    loader := LevelLoader new(engine)
-
-    levelName := config["startLevel"]
-    level: Level
-    level = loader load(levelName)
-    ui level = level
-
-    level start()
+    Engine new(config)
 }
 

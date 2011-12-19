@@ -8,14 +8,12 @@ import Hero, Baddie, Platform, Collision
 import math/[Vec2, Vec3, Random]
 
 // libs deps
-import gtk/Gtk // for timeouts
 import structs/ArrayList
 import deadlogger/Log
 
 Level: class {
 
     logger := static Log getLogger("Level")
-    FPS := 30.0 // let's target 30FPS
 
     engine: Engine
     actors := ArrayList<Actor> new()
@@ -90,16 +88,6 @@ Level: class {
         editor update(delta)
 
         engine ui redraw()
-    }
-
-    start: func {
-        // doing a fixed delta for now
-        delta := 1000.0 / FPS
-        Gtk addTimeout(delta, ||
-            update(delta / delta)
-            true // so the callback gets ran again
-        )
-        engine ui run()
     }
 
     bind2: func (src, dst: Vec2) {
