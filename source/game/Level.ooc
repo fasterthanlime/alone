@@ -3,7 +3,7 @@ use deadlogger
 // game deps
 import Engine, Camera, Editor
 import ui/[Sprite, MainUI]
-import Hero, Baddie, Platform, Collision, Vacuum
+import Hero, Baddie, Platform, Collision, Vacuum, Decor
     
 import math/[Vec2, Vec3, Random]
 
@@ -21,6 +21,7 @@ Level: class {
     swarms := ArrayList<Swarm> new()
     platforms := ArrayList<Platform> new()
     vacuums := ArrayList<Vacuum> new()
+    decors := ArrayList<Decor> new()
 
     name := "<untitled>"
     author := "<unknown>"

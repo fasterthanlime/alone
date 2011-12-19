@@ -1,7 +1,7 @@
 
 // game deps
 import ui/[MainUI, Input, Sprite]
-import game/[Level, Platform, Hero, Camera, Vacuum]
+import game/[Level, Platform, Hero, Camera, Vacuum, Decor]
 import Editor, LevelSaver, LevelLoader
 import math/[Vec2, Vec3]
 
@@ -186,8 +186,8 @@ DecorDroppable: class extends Droppable {
 
     drop: func {
         textInput(mode editor, "Drop custom SVG", "assets/svg/", |response| 
-            sprite := SvgSprite new(vec2(0), 1.0, response)
-            mode level bgSprites add(sprite)
+            decor := Decor new(mode level, response, vec2(0), 1.0)
+            mode level decors add(decor)
         )
     }
 

@@ -2,7 +2,7 @@ use deadlogger
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
-import Hero, Baddie, Platform, Vacuum
+import Hero, Baddie, Platform, Vacuum, Decor
     
 import math/[Vec2, Vec3, Random]
 
@@ -68,6 +68,15 @@ LevelSaver: class {
                 "type", "platform",
                 "pos", toArray(p pos),
                 "kind", p kind
+            ))
+        )
+
+        level decors each(|d|
+            bag add(make object(
+                "type", "decor",
+                "pos", toArray(d pos),
+                "scale", floatToNumber(d scale),
+                "path", d path
             ))
         )
 

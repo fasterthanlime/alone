@@ -4,7 +4,7 @@ use deadlogger
 // game deps
 import ui/[Sprite, MainUI]
 import Engine, Level
-import Hero, Baddie, Platform, Vacuum
+import Hero, Baddie, Platform, Vacuum, Decor
     
 import math/[Vec2, Vec3, Random]
 
@@ -67,6 +67,12 @@ LevelLoader: class {
                     logger info("Got vacuum at %s" format(pos _))
                     vacuum := Vacuum new(level, pos, angle)
                     level vacuums add(vacuum)
+                case "decor" =>
+                    path := object get("path", String)
+                    pos := readVec2(object, "pos")
+                    scale := readFloat(object, "scale")
+                    decor := Decor new(level, path, pos, scale)
+                    level decors add(decor)
             }
         }
 
