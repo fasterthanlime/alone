@@ -149,16 +149,58 @@ LabelSprite: class extends Sprite {
 
 }
 
-PngSprite: class extends Sprite {
+ImageSprite: class extends Sprite {
 
-    path: String
     tiled := false
-
-    image: ImageSurface
-    imageCache := static HashMap<String, ImageSurface> new()
 
     width  := -1
     height := -1
+
+    path: String
+
+    init: func ~ohshutuprock {}
+
+    new: static func (pos: Vec2, path: String) -> This {
+        low := path toLower()
+        if (low endsWith?(".png")) {
+            PngSprite new(pos, path)
+        } else if (low endsWith?(".svg")) {
+            SvgSprite new(pos, 1.0, path)
+        } else {
+            Exception new("Unknown image type (neither PNG nor SVG): %s" format(path)) throw()
+            null
+        }
+    }
+
+    paint: func (cr: Context) {
+        if (tiled) {
+            for (x in -3..3) {
+                for (y in -3..3) {
+                    cr save()
+                    cr translate (x * width, y * height)
+                    paintOnce(cr)
+                    cr restore()
+                }
+            }
+        } else {
+            cr save()
+            paintOnce(cr)
+            cr restore()
+        }
+    }
+
+    paintOnce: func (cr: Context) {
+        cr setSourceRGB(1.0, 0.0, 0.0)
+        cr setFontSize(80)
+        cr showText("MISSING IMAGE %s" format(path))
+    }
+
+}
+
+PngSprite: class extends ImageSprite {
+
+    image: ImageSurface
+    imageCache := static HashMap<String, ImageSurface> new()
 
     init: func (=pos, =path) {
         if(imageCache contains?(path)) {
@@ -173,27 +215,15 @@ PngSprite: class extends Sprite {
         height = image getHeight()
     }
 
-    paint: func (cr: Context) {
-        paintOnce(cr)
-        if (tiled) {
-            for (x in -3..3) {
-                for (y in -3..3) {
-                    cr save()
-                    cr translate (x * width, y * height)
-                    paintOnce(cr)
-                    cr restore()
-                }
-            }
-        }
-    }
-
     paintOnce: func (cr: Context) {
-        cr save()
         cr setSourceSurface(image, 0, 0)
         cr rectangle(0, 0, width, height)
         cr clip()
-        cr paintWithAlpha(alpha)
-        cr restore()
+        if (alpha == 1.0) {
+            cr paint()
+        } else {
+            cr paintWithAlpha(alpha)
+        }
     }
 
 }
@@ -213,9 +243,8 @@ CachedSvg: class {
 
 }
 
-SvgSprite: class extends Sprite {
+SvgSprite: class extends ImageSprite {
 
-    path: String
     svg: Svg
     svgCache := static HashMap<String, CachedSvg> new()
 
@@ -233,6 +262,9 @@ SvgSprite: class extends Sprite {
 
             svgCache put(path, cached)
         }
+
+        width  = cached width
+        height = cached height
     }
     
     cache: func (scaling: Float) {
@@ -243,9 +275,9 @@ SvgSprite: class extends Sprite {
         cr destroy()
     }
 
-    paint: func (cr: Context) {
+    paintOnce: func (cr: Context) {
         cr setSourceSurface(cached image, 0, 0)
-        cr rectangle(0.0, 0.0, cached width * scaling, cached height * scaling)
+        cr rectangle(0.0, 0.0, width * scaling, height * scaling)
         cr clip()
 
         if (alpha == 1.0) {
