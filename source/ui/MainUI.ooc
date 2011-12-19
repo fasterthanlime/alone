@@ -78,6 +78,14 @@ MainUI: class {
                     UIMode EDITOR
             }
         )
+
+        input onKeyPress(Keys ENTER, ||
+            this mode = match (this mode) {
+                case UIMode MENU => UIMode GAME
+                case UIMode GAME_OVER => UIMode MENU
+                case UIMode ULTIMATE_WIN => UIMode MENU
+            }
+        )
     }
 
     gameoverUI: GroupSprite
