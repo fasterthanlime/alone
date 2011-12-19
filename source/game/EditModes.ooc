@@ -1,7 +1,7 @@
 
 // game deps
 import ui/[MainUI, Input, Sprite]
-import game/[Level, Platform, Hero, Camera]
+import game/[Level, Platform, Hero, Camera, Vacuum]
 import Editor, LevelSaver, LevelLoader
 import math/[Vec2, Vec3]
 
@@ -213,6 +213,26 @@ PlatformDroppable: class extends Droppable {
 
 }
 
+VacuumDroppable: class extends Droppable {
+
+    vacuum: Vacuum
+
+    init: func (=mode) {
+        vacuum = Vacuum new(mode level, vec2(INF), 2.12)
+    }
+
+    enter: func {
+        vacuum mainSprite visible = true
+    }
+
+    leave: func {
+        vacuum mainSprite visible = false
+    }
+
+    getName: func -> String { "vacuum" }
+
+}
+
 StartPoint: class extends Droppable {
 
     label: LabelSprite
@@ -328,6 +348,7 @@ DropMode: class extends EditMode {
     initDroppables: func {
         // TODO: read this from files instead
         droppables add(StartPoint new(this))
+        droppables add(VacuumDroppable new(this))
         droppables add(PlatformDroppable new(this, "metal"))
         droppables add(PlatformDroppable new(this, "wood"))
         droppables add(PlatformDroppable new(this, "glass"))
