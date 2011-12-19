@@ -134,6 +134,13 @@ IdleMode: class extends EditMode {
             )
         )
 
+        input onKeyPress(Keys F3, ||
+            // F3 = rename
+            textInput(editor, "Level name", editor level name, |response|
+                editor level name = response
+            )
+        )
+
         input onKeyPress(Keys E, ||
             editor change(editor DROP)
         )
