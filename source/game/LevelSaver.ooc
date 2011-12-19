@@ -10,7 +10,7 @@ import math/[Vec2, Vec3, Random]
 import structs/[ArrayList, HashBag, Bag]
 import deadlogger/Log
 import text/json, text/json/[Parser, Generator, DSL] // Parser for Number
-import io/FileWriter
+import io/File
 
 LevelSaver: class {
 
@@ -30,8 +30,8 @@ LevelSaver: class {
                 "objects", objects(make, level)
             )
         )
-        logger debug("Generated json:")
-        result println()
+
+        File new(path) write(result)
     }
 
     objects: func (make: DSL, level: Level) -> Bag {
