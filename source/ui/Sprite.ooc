@@ -203,7 +203,13 @@ CachedSvg: class {
     svg: Svg
     image: ImageSurface
 
-    init: func (=svg, =image)
+    imgWidth, imgHeight: Int
+    width, height: Int
+
+    init: func (=svg) {
+        width  = svg getWidth()
+        height = svg getHeight()
+    }
 
 }
 
@@ -213,41 +219,40 @@ SvgSprite: class extends Sprite {
     svg: Svg
     svgCache := static HashMap<String, CachedSvg> new()
 
-    width, height: Int
-    overScaling := 1.0
+    cached: CachedSvg
+    scaling: Float
 
-    image: ImageSurface
-
-    init: func (=pos, scaling: Float, =width, =height, =path) {
+    init: func (=pos, =scaling, =path) {
         if(svgCache contains?(path)) {
-            cached := svgCache get(path)
-            svg   = cached svg
-            image = cached image
+            cached = svgCache get(path)
         } else {
-            logger debug("Loading svg asset %s" format(path))
             svg = Svg new(path)
+            cached = CachedSvg new(svg)
             cache(scaling)
-            svgCache put(path, CachedSvg new(svg, image))
+            logger debug("Loaded svg asset %s (size %dx%d)" format(path, cached width, cached height))
+
+            svgCache put(path, cached)
         }
     }
     
     cache: func (scaling: Float) {
-        image = ImageSurface new(CairoFormat ARGB32, width * overScaling, height * overScaling)
-        cr := Context new(image)
-        cr setSourceRGBA(0.0, 0.0, 0.0, 0.0)
+        cached image = ImageSurface new(CairoFormat ARGB32, cached width * scaling, cached height * scaling)
+        cr := Context new(cached image)
         cr scale(scaling, scaling)
-        cr paint()
-        cr scale(overScaling, overScaling)
         svg render(cr)
         cr destroy()
     }
 
     paint: func (cr: Context) {
-        cr scale(1.0 / overScaling, 1.0 / overScaling)
-        cr setSourceSurface(image, 0, 0)
-        cr rectangle(0.0, 0.0, width, height)
+        cr setSourceSurface(cached image, 0, 0)
+        cr rectangle(0.0, 0.0, cached width * scaling, cached height * scaling)
         cr clip()
-        cr paintWithAlpha(alpha)
+
+        if (alpha == 1.0) {
+            cr paint()
+        } else {
+            cr paintWithAlpha(alpha)
+        }
     }
 
     free: func {

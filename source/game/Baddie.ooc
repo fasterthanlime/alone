@@ -32,6 +32,8 @@ Baddie: class extends Actor {
     collideCounter := 0
     collideDuration := 15
 
+    scale := 0.5
+
     state := BaddieState CMON
 
     init: func (=level) {
@@ -41,7 +43,8 @@ Baddie: class extends Actor {
         body = Body new(level)
         body gravity = 0.0
 
-        mainSprite = SvgSprite new(body pos, 0.05, 100, 100, "assets/svg/baddies/baddie2_Full.svg")
+        mainSprite = SvgSprite new(body pos, 0.1, "assets/svg/baddies/baddie2_Full.svg")
+        mainSprite scale = vec2(0.5, 0.5)
         mainSprite offset = vec2(-40, -40)
         level fgSprites add(mainSprite)
 
@@ -89,10 +92,10 @@ Baddie: class extends Actor {
 
         body speed interpolate!(motion normalized() mul(speed), alpha)
         if (body speed x > 3.0) {
-            mainSprite scale x = 1
+            mainSprite scale x = scale
             mainSprite offset x = 0
         } else if(body speed x < -3.0) {
-            mainSprite scale x = -1
+            mainSprite scale x = -scale
             mainSprite offset x = 50
         }
 
