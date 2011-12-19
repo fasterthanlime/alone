@@ -18,7 +18,6 @@ Hero: class extends Actor {
     ui: MainUI
     input: Input
 
-    groundHeight := 0.0
     touchesGround := false
     jumpSpeed := 30.0
     speed := 18.0
@@ -33,7 +32,7 @@ Hero: class extends Actor {
     direction := 1.0 // 1 = right, -1 = left
 
 
-    init: func (=level, =groundHeight) {
+    init: func (=level) {
         ui = level engine ui
         input = ui input
         body = Body new(level)
@@ -95,20 +94,6 @@ Hero: class extends Actor {
         if (mainSprite alpha > 1.0) {
             mainSprite alpha = 1.0
         }
-
-        // artificial ground collision
-        /*
-        maxHeight := groundHeight - bb size y / 2
-        if (body pos y > maxHeight) {
-            if (body speed y > 0) {
-                body speed y = 0
-            }
-            body pos y = maxHeight
-            touchesGround = true
-        } else {
-            touchesGround = false
-        }
-        */
 
         bb pos              = body pos
         hb pos              = body pos

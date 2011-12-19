@@ -58,6 +58,12 @@ Editor: class extends Actor {
             }
         )
 
+        input onKeyPress(Keys BACKSPACE, ||
+            if (ui mode != UIMode EDITOR) return
+
+            level reset()
+        )
+
         input onKeyPress(Keys E, ||
             if (ui mode != UIMode EDITOR) return
 

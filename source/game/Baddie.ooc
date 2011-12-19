@@ -41,10 +41,10 @@ Baddie: class extends Actor {
         body = Body new(level)
         body gravity = 0.0
 
-        bb = RectSprite new(body pos)
-        bb filled = false
-        bb size = vec2(40, 40)
-        bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
+        // bb = RectSprite new(body pos)
+        // bb filled = false
+        // bb size = vec2(40, 40)
+        // bb color = vec3(0.3, 0.3, Random randInt(0, 255) / 255.0)
         // level sprites add(bb)
 
         mainSprite = SvgSprite new(body pos, 0.2, 100, 100, "assets/svg/baddies/Baddie1_Full.svg")
@@ -53,6 +53,16 @@ Baddie: class extends Actor {
 
         box = Box new(bb)
         level collideables add(box)
+    }
+
+    cleanup: func {
+        level fgSprites remove(mainSprite)
+        level collideables remove(box)
+    }
+
+    isPermanent: func -> Bool {
+        // baddie are spawned from swarms
+        false
     }
 
     update: func (delta: Float) {

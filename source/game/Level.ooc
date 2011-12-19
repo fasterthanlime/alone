@@ -20,9 +20,11 @@ Level: class {
     engine: Engine
     actors := ArrayList<Actor> new()
     collideables := ArrayList<Collideable> new()
+    swarms := ArrayList<Swarm> new()
 
     name := "<untitled>"
     author := "<unknown>"
+    startPos := vec2(0)
 
     // different passes
     bgSprites := ArrayList<Sprite> new()
@@ -31,17 +33,43 @@ Level: class {
     debugSprites := ArrayList<Sprite> new()
 
     camera: Camera
-
     editor: Editor
-
     hero: Hero
 
     init: func (=engine) {
-        hero = Hero new(this, engine ui height - 40)
+        hero = Hero new(this)
         actors add(hero)
 
         camera = Camera new(engine ui)
         editor = Editor new(engine ui, this)
+    }
+
+    reset: func {
+        // clear temp actors
+        iter := actors iterator()
+        while (iter hasNext?()) {
+            actor := iter next()
+            if (!actor permanent?) {
+                actor cleanup()
+                iter remove()
+            }
+        }
+    
+        // set hero to start position and still
+        hero body pos set!(startPos)
+        hero body speed set!(0, 0)
+    
+        // re-spawn baddies
+        swarms each(|swarm|
+            this // stupid ooc workaround, tee hee
+            swarm population times(||
+                baddie := Baddie new(this)
+
+                // TODO: place in area
+                baddie body pos set!(swarm center)
+                actors add(baddie)
+            )
+        )
     }
 
     update: func (delta: Float) {
@@ -95,8 +123,39 @@ Actor: class {
 
     update: func (delta: Float)
 
+    _: String {
+        get { toString() }
+    }
+
+    toString: func -> String {
+        "<A %s>" format(class name)
+    }
+
+    permanent?: Bool {
+        get { isPermanent() }
+    }
+
+    isPermanent: func -> Bool {
+        true
+    }
+
+    cleanup: func { }
+
 }
 
+Swarm: class extends Actor {
+
+    population := 8
+    center := vec2(0)
+    radius := 100.0
+
+    init: func {}
+
+    toString: func -> String {
+        "swarm of %d at %s in a radius of %.2f" format(population, center _, radius)
+    }
+
+}
 
 Body: class extends Actor {
 

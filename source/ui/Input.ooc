@@ -242,8 +242,9 @@ Keys: enum from UInt {
     Y     = 121
     Z     = 122
     ESC   = 65307
-    CTRL  = 65513
-    ALT   = 65505
+    ALT   = 65513
+    CTRL  = 65505
+    BACKSPACE = 65288
 }
 
 /*
