@@ -30,6 +30,9 @@ LevelLoader: class {
         level := Level new(engine, levelName)
         level name   = json get("name",   String)
         level author = json get("author", String)
+        if(json contains?("totalHits")) {
+            level totalHitsNumber = json get("totalHits", Int)
+        }
 
         logger debug("Level '%s', by '%s'" format(level name, level author))
 
