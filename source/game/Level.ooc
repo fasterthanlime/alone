@@ -24,6 +24,8 @@ Level: class {
 
     name := "<untitled>"
     author := "<unknown>"
+    backgroundPath := ""
+
     startPos := vec2(0)
 
     // different passes

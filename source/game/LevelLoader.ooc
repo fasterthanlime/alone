@@ -40,6 +40,7 @@ LevelLoader: class {
             match type {
                 case "background" =>
                     path := object get("path", String)
+                    level backgroundPath = path
                     bg := ImageSprite new(vec2(0), path)
                     bg tiled = true
                     level bgSprites add(bg)

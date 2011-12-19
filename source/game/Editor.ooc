@@ -6,7 +6,7 @@
 // game deps
 import ui/[MainUI, Input, Sprite]
 import game/[Level, Platform, Hero, Camera]
-import EditModes
+import EditModes, LevelSaver
 import math/[Vec2]
 
 // libs deps
@@ -56,6 +56,14 @@ Editor: class extends Actor {
                     mode enter()
                     UIMode EDITOR
             }
+        )
+
+        input onKeyPress(Keys F2, ||
+            if (ui mode != UIMode EDITOR) return
+    
+            // F2 = save
+            saver := LevelSaver new()
+            saver save(level, "/tmp/level.json")
         )
 
         input onKeyPress(Keys BACKSPACE, ||

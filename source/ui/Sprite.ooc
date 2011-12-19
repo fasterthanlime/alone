@@ -177,7 +177,7 @@ ImageSprite: class extends Sprite {
             for (x in -3..3) {
                 for (y in -3..3) {
                     cr save()
-                    cr translate (x * width, y * height)
+                    cr translate (x * (width - 1), y * (height - 1))
                     paintOnce(cr)
                     cr restore()
                 }
