@@ -302,6 +302,18 @@ MainUI: class {
     }
 
     drawUI: func (cr: Context) {
+        if (mode == UIMode GAME) {
+            // the less life we have, the less we see
+            cr rectangle(0, 0, width, height)
+            cr clip()
+            cr setSourceRGB(0.0, 0.0, 0.0)
+            cr paintWithAlpha(1.0 - level hero life / 100.0)
+
+            if (level hero bloody) {
+                bloodScreen draw(cr)
+            }
+        }
+
         hud draw(cr)
 
         if(notifyCounter > 0) {
@@ -316,15 +328,6 @@ MainUI: class {
         if (mode == UIMode EDITOR) {
             level editor paint(cr)
         } else {
-            // the less life we have, the less we see
-            cr rectangle(0, 0, width, height)
-            cr clip()
-            cr setSourceRGB(0.0, 0.0, 0.0)
-            cr paintWithAlpha(1.0 - level hero life / 100.0)
-
-            if (level hero bloody) {
-                bloodScreen draw(cr)
-            }
         }
     }
 
