@@ -24,3 +24,6 @@ get nddrylliog    'ooc-gtk'
 get nddrylliog    'ooc-cairo'
 get fredreichbier 'deadlogger'
 get nddrylliog    'ooc-rsvg'
+
+echo
+echo "Everything is up to date. Now run \`source devrc\`"
