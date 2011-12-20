@@ -111,6 +111,8 @@ Hero: class extends Actor {
         bloody = false
 
         numCollisions := 0
+
+        maxlength := 1000000.0
         reaction := vec2(0)
         perp := vec2(0)
         
@@ -124,8 +126,9 @@ Hero: class extends Actor {
                         if (angle > 0.0) {
                             life -= 1
                             bloody = true
-                            valid = false
+                            valid = true 
                         }
+                        maxlength = 3
                 }
             }
 
@@ -144,8 +147,15 @@ Hero: class extends Actor {
 
         if (numCollisions > 0) {
             factor := 1.0 / numCollisions as Float
-            body pos add!(reaction mul(factor))
             body speed project!(perp mul(factor))
+
+            reaction = reaction mul(factor)
+            logger info("reaction norm = %.2f"format(reaction norm()))
+            if (reaction norm() > maxlength) {
+                reaction = reaction normalized() mul(maxlength)
+            }
+
+            body pos add!(reaction)
         }
 
         minAlpha := 0.2
