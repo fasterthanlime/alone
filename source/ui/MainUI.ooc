@@ -191,7 +191,7 @@ MainUI: class {
         gamewinBg color = vec3(1.0, 0.7, 0.7)
         gamewinUI add(gamewinBg)
 
-        nyan := ImageSprite new(vec2(width / 2, 400), "assets/png/nyan.png")
+        nyan := ImageSprite new(vec2(width / 2, 400), "assets/svg/kitten_wShadow.svg")
         nyan offset set!(- nyan width / 2, - nyan height / 2) 
         gamewinUI add(nyan)
 
