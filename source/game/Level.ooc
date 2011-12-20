@@ -22,6 +22,7 @@ Level: class {
     platforms := ArrayList<Platform> new()
     vacuums := ArrayList<Vacuum> new()
     decors := ArrayList<Decor> new()
+    smokeSources := ArrayList<SmokeSource> new()
 
     name := "<untitled>"
     author := "<unknown>"
@@ -128,6 +129,7 @@ Level: class {
         }
 
         swarms each(|swarm| swarm update(delta))
+        smokeSources each(|ss| ss update(delta))
         
         // update those separately, in case
         // we want to clear actors
@@ -217,6 +219,72 @@ Actor: class {
     }
 
     cleanup: func { }
+
+}
+
+SmokeSource: class extends Actor {
+
+    center := vec2(0)
+    mainSprite: EllipseSprite
+
+    counter := 0
+
+    init: func (=level) {
+        mainSprite = EllipseSprite new(vec2(0))
+        mainSprite filled = false
+        mainSprite color = vec3(1.0, 0.3, 1.0)
+        level debugSprites add(mainSprite)
+    }
+
+    update: func (delta: Float) {
+        mainSprite pos set!(center)
+
+        counter -= 1
+        if (counter < 0) {
+            "SmokeSource at %s spawning smoke" printfln(center _)
+            s := Smoke new(level, center clone())
+            level actors add(s)
+            counter = Random randInt(20, 120)
+        }
+    }
+
+    toString: func -> String {
+        "source of smoke at $s" format(center _)
+    }
+
+}
+
+Smoke: class extends Actor {
+
+    pos: Vec2
+    mainSprite: ImageSprite
+    bb: RectSprite
+
+    ttl := Random randInt(60, 120)
+
+    init: func (=level, =pos) {
+        mainSprite = ImageSprite new(vec2(0), "assets/svg/greenSmoke.svg")
+        mainSprite offset set!(- mainSprite width / 2, - mainSprite height / 2)
+        level fgSprites add(mainSprite)
+
+        bb = RectSprite new(vec2(0))
+        bb size set!(50, 50)
+        level debugSprites add(bb)
+    }
+    
+    update: func (delta: Float) {
+        pos y -= 2.2
+        ttl -= 1
+        mainSprite alpha = (ttl / 100.0)
+
+        if(ttl <= 0) {
+            level debugSprites remove(bb)
+            level fgSprites remove(mainSprite)
+            level actors remove(this)
+        }
+        mainSprite pos set!(pos)
+        bb pos set!(pos)
+    }
 
 }
 

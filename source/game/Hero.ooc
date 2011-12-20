@@ -150,7 +150,6 @@ Hero: class extends Actor {
             body speed project!(perp mul(factor))
 
             reaction = reaction mul(factor)
-            logger info("reaction norm = %.2f"format(reaction norm()))
             if (reaction norm() > maxlength) {
                 reaction = reaction normalized() mul(maxlength)
             }
@@ -166,6 +165,7 @@ Hero: class extends Actor {
             mainSprite alpha = 1.0
         }
 
+        // now test smoke
     }
 
 }

@@ -68,6 +68,10 @@ LevelLoader: class {
                 case "hero" =>
                     level startPos = readVec2(object, "pos")
                     logger info("Hero starting at position %s" format(level startPos _))
+                case "smokeSource" =>
+                    smokeSource := SmokeSource new(level)
+                    smokeSource center = readVec2(object, "center")
+                    level smokeSources add(smokeSource)
                 case "swarm" =>
                     swarm := Swarm new(level)
                     swarm population = object get("population", Int)

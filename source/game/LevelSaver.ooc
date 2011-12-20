@@ -85,6 +85,13 @@ LevelSaver: class {
             ))
         )
 
+        level smokeSources each(|s|
+            bag add(make object(
+                "type", "smokeSource",
+                "center", toArray(s center)
+            ))
+        )
+
         bag
     }
 
