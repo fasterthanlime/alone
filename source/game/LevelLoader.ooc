@@ -64,6 +64,7 @@ LevelLoader: class {
                     bg := ImageSprite new(vec2(0), path)
                     bg tiled = true
                     level bgSprites add(bg)
+                    level bgSprite = bg
                 case "hero" =>
                     level startPos = readVec2(object, "pos")
                     logger info("Hero starting at position %s" format(level startPos _))

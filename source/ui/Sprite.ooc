@@ -16,6 +16,7 @@ Sprite: class {
     offset := vec2(0.0, 0.0)
     scale := vec2(1.0, 1.0)
     color := vec3(1.0, 0.0, 0.0)
+
     alpha := 1.0
     visible := true
 

@@ -37,6 +37,7 @@ Level: class {
 
     // different passes
     bgSprites := ArrayList<Sprite> new()
+    bgSprite: Sprite
     sprites := ArrayList<Sprite> new()
     fgSprites := ArrayList<Sprite> new()
     debugSprites := ArrayList<Sprite> new()
@@ -115,6 +116,11 @@ Level: class {
     }
 
     update: func (delta: Float) {
+        if(bgSprite) {
+            parallax := 0.3
+            bgSprite pos set!(engine ui translation mul(-parallax))
+        }
+
         if (engine ui mode == UIMode GAME) {
             actors each(|actor|
                 actor update(delta)
