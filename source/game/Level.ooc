@@ -241,7 +241,6 @@ SmokeSource: class extends Actor {
 
         counter -= 1
         if (counter < 0) {
-            "SmokeSource at %s spawning smoke" printfln(center _)
             s := Smoke new(level, center clone())
             level actors add(s)
             counter = Random randInt(20, 120)
@@ -284,6 +283,11 @@ Smoke: class extends Actor {
         }
         mainSprite pos set!(pos)
         bb pos set!(pos)
+
+        if (level hero body pos dist(pos) < 50) {
+            level hero life -= 1
+            level hero bloody = true
+        }
     }
 
 }

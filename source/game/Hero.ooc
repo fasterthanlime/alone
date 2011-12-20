@@ -164,8 +164,6 @@ Hero: class extends Actor {
         if (mainSprite alpha > 1.0) {
             mainSprite alpha = 1.0
         }
-
-        // now test smoke
     }
 
 }
