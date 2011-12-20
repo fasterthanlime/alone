@@ -472,6 +472,68 @@ EndPoint: class extends Droppable {
 
 }
 
+DeathDroppable: class extends Droppable {
+
+    label: LabelSprite
+    pointer: EllipseSprite
+
+    input: Proxy
+
+    init: func (=mode) {
+        input = mode input sub()
+
+        pointer = EllipseSprite new(vec2(mode level startPos))
+        pointer color = vec3(0.3, 0.3, 1.0)
+        pointer radius = 40
+        pointer filled = false
+        pointer thickness = 10.0
+        pointer visible = false
+        mode level fgSprites add(pointer)
+
+        label = LabelSprite new(vec2(0), "death") 
+        label fontSize = 38
+        label centered = true
+        label visible = false
+        mode level fgSprites add(label)
+
+        input onMouseDrag(Buttons LEFT, ||
+            drop()
+        )
+    }
+
+    update: func {
+        pointer pos set!(mode level camera mouseworldpos)
+    }
+
+    drop: func {
+        label pos set!(pointer pos)
+        ss := DeathSpot new(mode level)
+        ss center set!(label pos)
+        mode level deathSpots add(ss)
+    }
+
+    globalEnter: func {
+        label visible = true
+    }
+
+    globalLeave: func {
+        label visible = false
+    }
+
+    enter: func {
+        input enabled = true
+        pointer visible = true
+    }
+
+    leave: func {
+        input enabled = false
+        pointer visible = false
+    }
+
+    getName: func -> String { "death spot" }
+
+}
+
 SmokeDroppable: class extends Droppable {
 
     label: LabelSprite
@@ -657,6 +719,7 @@ DropMode: class extends EditMode {
         droppables add(DecorDroppable new(this))
         droppables add(SwarmDroppable new(this))
         droppables add(SmokeDroppable new(this))
+        droppables add(DeathDroppable new(this))
         droppables add(VacuumDroppable new(this))
 
         droppable = droppables[0]

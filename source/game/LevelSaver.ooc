@@ -92,6 +92,13 @@ LevelSaver: class {
             ))
         )
 
+        level deathSpots each(|s|
+            bag add(make object(
+                "type", "deathSpot",
+                "center", toArray(s center)
+            ))
+        )
+
         bag
     }
 

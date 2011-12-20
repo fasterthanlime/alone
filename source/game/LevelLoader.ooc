@@ -72,6 +72,10 @@ LevelLoader: class {
                     smokeSource := SmokeSource new(level)
                     smokeSource center = readVec2(object, "center")
                     level smokeSources add(smokeSource)
+                case "deathSpot" =>
+                    deathSpot := DeathSpot new(level)
+                    deathSpot center = readVec2(object, "center")
+                    level deathSpots add(deathSpot)
                 case "swarm" =>
                     swarm := Swarm new(level)
                     swarm population = object get("population", Int)

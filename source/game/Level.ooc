@@ -23,6 +23,7 @@ Level: class {
     vacuums := ArrayList<Vacuum> new()
     decors := ArrayList<Decor> new()
     smokeSources := ArrayList<SmokeSource> new()
+    deathSpots := ArrayList<DeathSpot> new()
 
     name := "<untitled>"
     author := "<unknown>"
@@ -129,6 +130,7 @@ Level: class {
         }
 
         swarms each(|swarm| swarm update(delta))
+        deathSpots each(|ds| ds update(delta))
         smokeSources each(|ss| ss update(delta))
         
         // update those separately, in case
@@ -222,6 +224,34 @@ Actor: class {
 
 }
 
+DeathSpot: class extends Actor {
+
+    center := vec2(0)
+    mainSprite: EllipseSprite
+
+    counter := 0
+
+    init: func (=level) {
+        mainSprite = EllipseSprite new(vec2(0))
+        mainSprite filled = false
+        mainSprite color = vec3(1.0, 0.3, 1.0)
+        level debugSprites add(mainSprite)
+    }
+
+    update: func (delta: Float) {
+        mainSprite pos set!(center)
+
+        if (level hero body pos dist(center) < 50) {
+            level hero life -= 20
+            level hero bloody = true
+        }
+    }
+
+    toString: func -> String {
+        "death spot at $s" format(center _)
+    }
+
+}
 SmokeSource: class extends Actor {
 
     center := vec2(0)
