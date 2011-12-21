@@ -19,8 +19,8 @@ function get() {
 }
 
 get nddrylliog    'zombieconfig'
-get nddrylliog    'ooc-gdk'
-get nddrylliog    'ooc-gtk'
+get nddrylliog    'ooc-gobject'
+get eagle2com     'ooc-sdl'
 get nddrylliog    'ooc-cairo'
 get fredreichbier 'deadlogger'
 get nddrylliog    'ooc-rsvg'
