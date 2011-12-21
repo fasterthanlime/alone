@@ -8,7 +8,7 @@ import deadlogger/[Log, Handler, Formatter, Filter]
 import ui/[MainUI]
 import game/[Engine, Level, LevelLoader]
 
-main: func {
+main: func (argc: Int, argv: CString*) {
     // setup logging
     console := StdoutHandler new()
     console setFormatter(ColoredFormatter new(NiceFormatter new()))

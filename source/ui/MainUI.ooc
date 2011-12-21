@@ -58,7 +58,7 @@ MainUI: class {
         }
 
         screen = SDLVideo setMode(width, height, 32, flags)
-        SDLVideo wmSetCaption(config["title"], "")
+        SDLVideo wmSetCaption(config["title"], null)
 
         sdlSurface = SDLVideo createRgbSurface(SDL_HWSURFACE, width, height, 32,
             0x00FF0000, 0x0000FF00, 0x000000FF, 0)
@@ -108,6 +108,7 @@ MainUI: class {
 
     quit: func {
         SDL quit()
+	exit(0)
     }
 
     gameoverUI: GroupSprite
@@ -271,8 +272,8 @@ MainUI: class {
     }
 
     redraw: func {
-        input _poll()
         draw()
+        input _poll()
     }
 
     draw: func {

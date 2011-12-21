@@ -25,10 +25,10 @@ Platform: class extends Actor {
         // level sprites add(bb)
 
         vertical := kind endsWith?("vertical")
-        small := kind contains?("-small")
+        isSmall := kind contains?("-small")
 
         if (kind startsWith?("transparent")) {
-            if (small) width = width / 2
+            if (isSmall) width = width / 2
             rect := RectSprite new(pos)
             if (vertical) {
                 rect size = vec2(height, width)
