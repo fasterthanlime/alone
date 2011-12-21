@@ -5,3 +5,4 @@ alone
 .*.swp
 *_tmp
 *.exe
+.DS_Store
