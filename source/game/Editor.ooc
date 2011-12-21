@@ -78,7 +78,8 @@ Editor: class extends Actor {
     paint: func (cr: Context) {
         if (ui mode != UIMode EDITOR) return
 
-        cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+	// that's ugly
+	cr setFontFace(LabelSprite cache get("assets/fonts/impact.ttf"))
         cr setSourceRGB(1.0, 0.3, 0.3)
         cr moveTo(100, 100)
         cr setFontSize(40.0)

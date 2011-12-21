@@ -222,6 +222,7 @@ LabelSprite: class extends Sprite {
 		logger warn("Loading font failed, falling back on default font")
 	    } else {
 		font = newFontFromFreetype(ftFace, 0)
+		cache put(path, font)
 	    }
 	}
 
