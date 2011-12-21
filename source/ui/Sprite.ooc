@@ -5,7 +5,7 @@ import math/[Vec2, Vec3]
 
 // libs deps
 import deadlogger/Log
-import cairo/Cairo
+import cairo/[Cairo, CairoFT]
 import rsvg
 import freetype2
 import structs/[HashMap, ArrayList]
@@ -202,6 +202,7 @@ LabelSprite: class extends Sprite {
     text: String
     fontSize := 22.0
 
+    font: FontFace
     path := "assets/fonts/impact.ttf"
     oldPath := ""
     cache := static HashMap<String, FontFace> new()
@@ -214,9 +215,14 @@ LabelSprite: class extends Sprite {
 	if (cache contains?(path)) {
 	    font = cache get(path)
 	} else {
-	    ftFace: FTFaceRec
-	    freetype newFace(path, 0, ftFace&)
-	    font = FontFace new(ftFace, 0)
+            logger debug("Loading font asset %s" format(path))
+	    ftFace: FTFace
+	    error := freetype newFace(path, 0, ftFace&)
+	    if (error) {
+		logger warn("Loading font failed, falling back on default font")
+	    } else {
+		font = newFontFromFreetype(ftFace, 0)
+	    }
 	}
 
 	oldPath = path
@@ -229,7 +235,7 @@ LabelSprite: class extends Sprite {
 	if (font) {
 	    cr setFontFace(font)
 	} else {
-	    cr selectFontFace(family, CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+	    cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
 	}
         cr setFontSize(fontSize)
 
