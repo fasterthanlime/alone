@@ -79,6 +79,12 @@ Hero: class extends Actor {
         mainSprite pos      = body pos
         mainSprite offset x = direction * bb size x / 2
         mainSprite scale  x = - direction * scale
+
+	// z-kill
+	if (body pos y > 30000.0) {
+	    // if you're this far down you're probably fucked..
+	    ui mode = UIMode GAME_OVER
+	}
     }
 
     rocketUpdate: func (delta: Float) {
