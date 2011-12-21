@@ -27,7 +27,7 @@ echo "Done."
 
 echo "Compiling the game..."
 source $PWD/devrc
-rock -g -v "+-arch" "+x86_64" "+-Wl,-framework,Cocoa" -lSDLmain -lSDL
+rock -v "+-arch" "+x86_64" "+-Wl,-framework,Cocoa" -lSDLmain -lSDL
 echo "Done."
 
 echo "Copying configuration, assets and executable into the bundle..."
