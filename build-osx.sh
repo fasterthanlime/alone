@@ -34,6 +34,5 @@ echo "Copying configuration, assets and executable into the bundle..."
 ditto $PWD/alone "$BUNDLE/Contents/Resources/"
 ditto $PWD/alone.config "$BUNDLE/Contents/Resources/"
 ditto $PWD/assets "$BUNDLE/Contents/Resources/assets"
-echo -n "Done."
+echo "Done."
 
-echo " [ SUCCESS ] !"
