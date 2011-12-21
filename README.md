@@ -8,11 +8,11 @@ This is an experimental (you're used to this word with me by now, aren't you?) e
 Clone it, go to libs/, clone the following:
 
   * https://github.com/nddrylliog/zombieconfig
-  * https://github.com/nddrylliog/ooc-gdk
-  * https://github.com/nddrylliog/ooc-gtk
+  * https://github.com/eagle2com/ooc-sdl
   * https://github.com/nddrylliog/ooc-cairo
-  * https://github.com/fredreichbier/deadlogger
   * https://github.com/nddrylliog/ooc-rsvg
+  * https://github.com/nddrylliog/ooc-gobject
+  * https://github.com/fredreichbier/deadlogger
 
 Then source "devrc" (or just export OOC\_LIBS=path-to-alone/libs),
 hit `rock -v` in the root directory and you're good to go!

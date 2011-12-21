@@ -52,7 +52,12 @@ MainUI: class {
         width  = config["screenWidth"]  toInt()
         height = config["screenHeight"] toInt()
 
-        screen = SDLVideo setMode(width, height, 32, SDL_HWSURFACE)
+        flags := SDL_HWSURFACE
+        if(config["fullScreen"] == "true") {
+            flags |= SDL_FULLSCREEN
+        }
+
+        screen = SDLVideo setMode(width, height, 32, flags)
         SDLVideo wmSetCaption(config["title"], "")
 
         sdlSurface = SDLVideo createRgbSurface(SDL_HWSURFACE, width, height, 32,
@@ -92,6 +97,17 @@ MainUI: class {
                 case => this mode
             }
         )
+
+        input onKeyPress(Keys ESC, ||
+            match (this mode) {
+                case UIMode MENU => quit()
+                case UIMode GAME => this mode = UIMode MENU
+            }
+        )
+    }
+
+    quit: func {
+        SDL quit()
     }
 
     gameoverUI: GroupSprite

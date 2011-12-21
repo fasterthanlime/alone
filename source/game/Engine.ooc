@@ -31,7 +31,10 @@ Engine: class {
 
             // teleport ourselves in
             // the future when the next frame is due
-            SDL delay(ticks + delta - SDL getTicks())
+            roadToFuture := ticks + delta - SDL getTicks()
+            if(roadToFuture > 0) {
+                SDL delay(roadToFuture)
+            }
         }
     }
 
