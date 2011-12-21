@@ -138,8 +138,6 @@ Level: class {
         camera update(delta)
         editor update(delta)
 
-        engine ui redraw()
-
         if (haveWon) {
             if (wonCounter > 0) {
                 wonCounter -= 1

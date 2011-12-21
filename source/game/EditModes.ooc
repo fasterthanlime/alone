@@ -7,7 +7,7 @@ import math/[Vec2, Vec3]
 
 // libs deps
 import deadlogger/Log
-import cairo/[Cairo, GdkCairo] 
+import cairo/[Cairo] 
 import structs/[HashMap, ArrayList]
 
 EditMode: class {

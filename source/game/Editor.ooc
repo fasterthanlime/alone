@@ -11,7 +11,7 @@ import math/[Vec2]
 
 // libs deps
 import deadlogger/Log
-import cairo/[Cairo, GdkCairo] 
+import cairo/[Cairo] 
 import structs/[HashMap, ArrayList]
 
 Editor: class extends Actor {
