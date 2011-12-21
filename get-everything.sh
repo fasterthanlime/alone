@@ -24,6 +24,7 @@ get eagle2com     'ooc-sdl'
 get nddrylliog    'ooc-cairo'
 get fredreichbier 'deadlogger'
 get nddrylliog    'ooc-rsvg'
+get nddrylliog    'ooc-freetype2'
 
 echo
 echo "Everything is up to date. Now run \`source devrc\`"
