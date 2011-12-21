@@ -1,4 +1,4 @@
-use deadlogger, cairo, rsvg
+use deadlogger, cairo, rsvg, freetype2
 
 // game deps
 import math/[Vec2, Vec3]
@@ -7,6 +7,7 @@ import math/[Vec2, Vec3]
 import deadlogger/Log
 import cairo/Cairo
 import rsvg
+import freetype2
 import structs/[HashMap, ArrayList]
 
 Sprite: class {
@@ -189,6 +190,10 @@ LineSprite: class extends Sprite {
 
 }
 
+// initialize freetype
+freetype: FTLibrary
+freetype initFreeType()
+
 /**
  * A label that displays text
  */
@@ -196,14 +201,36 @@ LabelSprite: class extends Sprite {
 
     text: String
     fontSize := 22.0
-    family := "Impact"
+
+    path := "assets/fonts/impact.ttf"
+    oldPath := ""
+    cache := static HashMap<String, FontFace> new()
+
     centered := false
 
     init: func (=pos, =text) { }
 
+    loadFont: func {
+	if (cache contains?(path)) {
+	    font = cache get(path)
+	} else {
+	    ftFace: FTFaceRec
+	    freetype newFace(path, 0, ftFace&)
+	    font = FontFace new(ftFace, 0)
+	}
+
+	oldPath = path
+    }
+
     paint: func (cr: Context) {
+	if (oldPath != path) loadFont()
+
         cr newSubPath()
-        cr selectFontFace(family, CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+	if (font) {
+	    cr setFontFace(font)
+	} else {
+	    cr selectFontFace(family, CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+	}
         cr setFontSize(fontSize)
 
         if (centered) {
