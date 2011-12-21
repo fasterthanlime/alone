@@ -324,6 +324,9 @@ SvgSprite: class extends ImageSprite {
             cached = svgCache get(path)
         } else {
             svg = Svg new(path)
+            if (!svg) {
+                Exception new("Failed to load svg " + path) throw()
+            }
             cached = CachedSvg new(svg)
             cache(scaling)
             logger debug("Loaded svg asset %s (size %dx%d)" format(path, cached width, cached height))

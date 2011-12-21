@@ -4,7 +4,7 @@ import ui/MainUI
 import game/[Level, LevelLoader]
 
 // libs deps
-import gtk/Gtk // for timeouts
+import sdl/Sdl // for timeouts
 use zombieconfig
 import zombieconfig
 
@@ -19,14 +19,20 @@ Engine: class {
         ui = MainUI new(config)
         load(config["startLevel"])
 
-        // doing a fixed delta for now
-        delta := 1000.0 / FPS
-        Gtk addTimeout(delta, ||
-            level update(1.0)
-            true // so the callback gets ran again
-        )
+        // main loop
+        ticks: Int
+        delta := 1000.0 / 30.0 // try 30FPS
 
-        ui run()
+        while (true) {
+            ticks = SDL getTicks()
+
+            level update(1.0)
+            ui redraw()
+
+            // teleport ourselves in
+            // the future when the next frame is due
+            SDL delay(ticks + delta - SDL getTicks())
+        }
     }
 
     load: func (levelName: String) {

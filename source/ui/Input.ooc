@@ -10,18 +10,17 @@
 // libs deps
 import deadlogger/Log
 import structs/[ArrayList]
-import gtk/[Gtk, Widget, Window]
-import gdk/[Event]
+import sdl/[Sdl, Event]
 
 // game deps
 import ui/[MainUI]
 import math/[Vec2]
 
-Event: class {
+LEvent: class {
 
 }
 
-MouseEvent: class extends Event {
+MouseEvent: class extends LEvent {
 
     pos: Vec2
     
@@ -61,7 +60,7 @@ MouseRelease: class extends MouseEvent {
 
 }
 
-KeyboardEvent: class extends Event {
+KeyboardEvent: class extends LEvent {
 
     code: UInt
     init: func (=code) {}
@@ -86,7 +85,7 @@ KeyRelease: class extends KeyboardEvent {
  */
 Listener: class {
 
-    cb: Func(Event)
+    cb: Func(LEvent)
     init: func (=cb) {}
 
 }
@@ -111,7 +110,7 @@ Proxy: abstract class {
      * then match on its type to see which event
      * it is.
      */
-    onEvent: func (cb: Func(Event)) -> Listener {
+    onEvent: func (cb: Func(LEvent)) -> Listener {
         listener := Listener new(cb)
         listeners add(listener)
         listener
@@ -194,7 +193,7 @@ Proxy: abstract class {
     // private stuff
     //---------------
 
-    _notifyListeners: func (ev: Event) {
+    _notifyListeners: func (ev: LEvent) {
         if (!enabled) return
 
         if (_grab) {
@@ -259,16 +258,12 @@ Input: class extends Proxy {
     debug := false
 
     ui: MainUI
-    win: Window
 
     _mousepos := vec2(0.0, 0.0)
 
     init: func (=ui) {
-        win = ui win
         keyState = gc_malloc(Bool size * MAX_KEY)
         buttonState = gc_malloc(Bool size * MAX_BUTTON)
-
-        _connectEvents()
 
         logger info("Input system initialized")
     }
@@ -299,62 +294,56 @@ Input: class extends Proxy {
     // private functions below
     // --------------------------------
 
-    _connectEvents: func {
-        // make sure gdk sends us all the right events
-        win addEvents(GdkEventMask POINTER_MOTION_MASK)
-        win addEvents(GdkEventMask BUTTON_PRESS_MASK)
-        win addEvents(GdkEventMask BUTTON_RELEASE_MASK)
+    _poll: func {
+        event: Event
 
-        // register all event listeners
-        id1 = win connectKeyEvent("key-press-event",       |ev| _keyPressed (ev))
-        id2 = win connectKeyEvent("key-release-event",     |ev| _keyReleased(ev))
-        id3 = win connectKeyEvent("motion-notify-event",   |ev| _mouseMoved(ev))
-        id4 = win connectKeyEvent("button-press-event",    |ev| _mousePressed(ev))
-        id5 = win connectKeyEvent("button-release-event",  |ev| _mouseReleased(ev))
+        while(SDLEvent poll(event&)) {
+            match (event type) {
+                case SDL_KEYDOWN => _keyPressed (event key keysym sym)
+                case SDL_KEYUP   => _keyReleased(event key keysym sym)
+                case SDL_MOUSEBUTTONUP   => _mouseReleased(event button button)
+                case SDL_MOUSEBUTTONDOWN => _mousePressed (event button button)
+                case SDL_MOUSEMOTION => _mouseMoved (event motion x, event motion y)
+            }
+        }
     }
-
-    id1, id2, id3, id4, id5: GULong // handler ids
 
     disconnect: func {
-        win disconnect(id1)
-        win disconnect(id2)
-        win disconnect(id3)
-        win disconnect(id4)
-        win disconnect(id5)
+        // useless, we'll just stop polling.
     }
 
-    _keyPressed: func (ev: EventKey*) {
+    _keyPressed: func (keyval: Int) {
         if(debug) {
-            logger debug("Key pressed! it's state %d, key %u" format(ev@ state, ev@ keyval))
+            logger debug("Key pressed! it's state %d, key %u" format(keyval))
         }
-        if (ev@ keyval < MAX_KEY) {
-            keyState[ev@ keyval] = true
-            _notifyListeners(KeyPress new(ev@ keyval))
-        }
-    }
-
-    _keyReleased: func (ev: EventKey*) {
-        if (ev@ keyval < MAX_KEY) {
-            keyState[ev@ keyval] = false
-            _notifyListeners(KeyRelease new(ev@ keyval))
+        if (keyval < MAX_KEY) {
+            keyState[keyval] = true
+            _notifyListeners(KeyPress new(keyval))
         }
     }
 
-    _mouseMoved: func (ev: EventMotion*) {
-        (_mousepos x, _mousepos y) = (ev@ x, ev@ y)
+    _keyReleased: func (keyval: Int) {
+        if (keyval < MAX_KEY) {
+            keyState[keyval] = false
+            _notifyListeners(KeyRelease new(keyval))
+        }
+    }
+
+    _mouseMoved: func (x, y: Int) {
+        (_mousepos x, _mousepos y) = (x as Float, y as Float)
         _notifyListeners(MouseMotion new(_mousepos))
     }
 
-    _mousePressed: func (ev: EventButton*) {
+    _mousePressed: func (button: Int) {
         logger debug("Mouse pressed at %s" format(_mousepos _))
-        buttonState[ev@ button] = true
-        _notifyListeners(MousePress new(_mousepos, ev@ button))
+        buttonState[button] = true
+        _notifyListeners(MousePress new(_mousepos, button))
     }
 
-    _mouseReleased: func (ev: EventButton*) {
+    _mouseReleased: func (button: Int) {
         logger debug("Mouse released at %s" format(_mousepos _))
-        buttonState[ev@ button] = false
-        _notifyListeners(MouseRelease new(_mousepos, ev@ button))
+        buttonState[button] = false
+        _notifyListeners(MouseRelease new(_mousepos, button))
     }
 
     getMousePos: func -> Vec2 {
@@ -368,61 +357,61 @@ Input: class extends Proxy {
  * Key codes
  * TODO: have them all?
  */
-Keys: enum from UInt {
-    LEFT  = 65361
-    RIGHT = 65363
-    SPACE = 32
-    ENTER = 65293
-    F1    = 65470
-    F2    = 65471
-    F3    = 65472
-    F4    = 65473
-    F5    = 65474
-    F6    = 65475
-    F7    = 65476
-    F8    = 65477
-    F9    = 65478
-    F10   = 65479
-    F11   = 65480
-    F12   = 65481
-    A     = 97
-    B     = 98
-    C     = 99
-    D     = 100
-    E     = 101
-    F     = 102
-    G     = 103
-    H     = 104
-    I     = 105
-    J     = 106
-    K     = 107
-    L     = 108
-    M     = 109
-    N     = 110
-    O     = 111
-    P     = 112
-    Q     = 113
-    R     = 114
-    S     = 115
-    T     = 116
-    U     = 117
-    V     = 118
-    W     = 119
-    X     = 120
-    Y     = 121
-    Z     = 122
-    ESC   = 65307
-    ALT   = 65513
-    CTRL  = 65505
-    BACKSPACE = 65288
+Keys: enum from Int {
+    LEFT  = SDLK_LEFT
+    RIGHT = SDLK_RIGHT
+    SPACE = SDLK_SPACE
+    ENTER = SDLK_RETURN
+    F1    = SDLK_F1
+    F2    = SDLK_F2
+    F3    = SDLK_F3
+    F4    = SDLK_F4
+    F5    = SDLK_F5
+    F6    = SDLK_F6
+    F7    = SDLK_F7
+    F8    = SDLK_F8
+    F9    = SDLK_F9
+    F10   = SDLK_F10
+    F11   = SDLK_F11
+    F12   = SDLK_F12
+    A     = SDLK_a
+    B     = SDLK_b
+    C     = SDLK_c
+    D     = SDLK_d
+    E     = SDLK_e
+    F     = SDLK_f
+    G     = SDLK_g
+    H     = SDLK_h
+    I     = SDLK_i
+    J     = SDLK_j
+    K     = SDLK_k
+    L     = SDLK_l
+    M     = SDLK_m
+    N     = SDLK_n
+    O     = SDLK_o
+    P     = SDLK_p
+    Q     = SDLK_q
+    R     = SDLK_r
+    S     = SDLK_s
+    T     = SDLK_t
+    U     = SDLK_u
+    V     = SDLK_v
+    W     = SDLK_w
+    X     = SDLK_x
+    Y     = SDLK_y
+    Z     = SDLK_z
+    ESC   = SDLK_ESCAPE
+    ALT   = SDLK_LALT // opinionated, but meh.
+    CTRL  = SDLK_LCTRL
+    BACKSPACE = SDLK_BACKSPACE
 }
 
 /*
  * Mouse button codes
  */
-Buttons: enum from UInt {
-    LEFT   = 1
-    MIDDLE = 2
-    RIGHT  = 3
+Buttons: enum from Int {
+    LEFT   = SDL_BUTTON_LEFT
+    MIDDLE = SDL_BUTTON_MIDDLE
+    RIGHT  = SDL_BUTTON_RIGHT
 }
 

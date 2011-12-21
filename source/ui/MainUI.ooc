@@ -1,11 +1,10 @@
 
 /*
- * Main UI. Mostly a gtk window creating a cairo
- * context on each redraw, forcing a redraw every
- * few milliseconds.
+ * Main UI. Mostly initializing SDL, launching the input
+ * system, and tada!
  */
 
-use cairo, gtk, deadlogger
+use gobject, cairo, sdl, deadlogger
 
 // game deps
 import Sprite, Input
@@ -14,11 +13,11 @@ import math/[Vec2, Vec3]
 
 // libs deps
 import deadlogger/Log
-import cairo/[Cairo, GdkCairo] 
-import gtk/[Gtk, Widget, Window]
-import gdk/[Event]
+import cairo/[Cairo] 
 import structs/[ArrayList]
 import zombieconfig
+import sdl/[Sdl, Event, Video]
+import gobject
 
 UIMode: enum {
     MENU
@@ -29,11 +28,13 @@ UIMode: enum {
 }
 
 MainUI: class {
-    win: Window
     debug := false
     debugRender := false
 
     width, height: Int
+    screen, sdlSurface: SdlSurface*
+    cairoSurface: ImageSurface
+    cairoContext: Context
 
     logger := static Log getLogger(This name)
 
@@ -45,22 +46,25 @@ MainUI: class {
     mode := UIMode MENU
 
     init: func (config: ZombieConfig) {
-        win = Window new(config["title"])
+        g_type_init() // needed for librsvg to work
+        SDL init(SDL_INIT_EVERYTHING)
 
         width  = config["screenWidth"]  toInt()
         height = config["screenHeight"] toInt()
-        win setUSize(width as GInt, height as GInt)
 
-        win setPosition(Window POS_CENTER)
+        screen = SDLVideo setMode(width, height, 32, SDL_HWSURFACE)
+        SDLVideo wmSetCaption(config["title"], "")
 
-        // exit on window close
-        win connect("delete-event", exit) 
-        win connect("expose-event", || draw())
+        sdlSurface = SDLVideo createRgbSurface(SDL_HWSURFACE, width, height, 32,
+            0x00FF0000, 0x0000FF00, 0x000000FF, 0)
+
+        cairoSurface = ImageSurface new(sdlSurface@ pixels, CairoFormat RGB24,
+            sdlSurface@ w, sdlSurface@ h, sdlSurface@ pitch)
+
+        cairoContext = Context new(cairoSurface)
 
         // init input system
         input = Input new(this)
-
-        win showAll()
 
         createUIParts()
 
@@ -250,20 +254,22 @@ MainUI: class {
         setupEvents()
     }
 
-    run: func {
-        Gtk main()
-    }
-
     redraw: func {
-        gdkWin := win getWindow()
-        gdkWin invalidateRegion(gdkWin getClipRegion(), false)
+        input _poll()
+        draw()
     }
 
     draw: func {
-        gdkWin := win getWindow()
-        cr := GdkContext new(gdkWin)
+        cr := cairoContext
+
+        // clear screen and go again!
+        cr setSourceRGB(0.0, 0.0, 0.0)
+        cr paint()
+
         paint(cr)
-        cr destroy()
+
+        SDLVideo blitSurface(sdlSurface, null, screen, null)
+        SDLVideo flip(screen)
     }
 
     paint: func (cr: Context) {
