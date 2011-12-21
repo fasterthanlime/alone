@@ -304,6 +304,7 @@ Input: class extends Proxy {
                 case SDL_MOUSEBUTTONUP   => _mouseReleased(event button button)
                 case SDL_MOUSEBUTTONDOWN => _mousePressed (event button button)
                 case SDL_MOUSEMOTION => _mouseMoved (event motion x, event motion y)
+                case SDL_QUIT => ui quit()
             }
         }
     }

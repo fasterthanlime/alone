@@ -16,6 +16,7 @@ main: func {
    
     // load config
     config := ZombieConfig new("alone.config", |base|
+        base("fullScreen", "false")
         base("screenWidth", "1024")
         base("screenHeight", "768")
         base("startLevel", "level1")
