@@ -212,32 +212,32 @@ LabelSprite: class extends Sprite {
     init: func (=pos, =text) { }
 
     loadFont: func {
-    if (cache contains?(path)) {
-        font = cache get(path)
-    } else {
-            logger debug("Loading font asset %s" format(path))
-        ftFace: FTFace
-        error := freetype newFace(path, 0, ftFace&)
-        if (error) {
-        logger warn("Loading font failed, falling back on default font")
+        if (cache contains?(path)) {
+            font = cache get(path)
         } else {
-        font = newFontFromFreetype(ftFace, 0)
-        cache put(path, font)
+            logger debug("Loading font asset %s" format(path))
+            ftFace: FTFace
+            error := freetype newFace(path, 0, ftFace&)
+            if (error) {
+                logger warn("Loading font failed, falling back on default font")
+            } else {
+                font = newFontFromFreetype(ftFace, 0)
+                cache put(path, font)
+            }
         }
-    }
 
-    oldPath = path
+        oldPath = path
     }
 
     paint: func (cr: Context) {
-    if (oldPath != path) loadFont()
+        if (oldPath != path) loadFont()
 
         cr newSubPath()
-    if (font) {
-        cr setFontFace(font)
-    } else {
-        cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
-    }
+        if (font) {
+            cr setFontFace(font)
+        } else {
+            cr selectFontFace("Impact", CairoFontSlant NORMAL, CairoFontWeight NORMAL)
+        }
         cr setFontSize(fontSize)
 
         if (centered) {
